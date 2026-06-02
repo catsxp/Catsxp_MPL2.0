@@ -1,0 +1,35 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/playlist/core/common/buildflags/buildflags.gni")
+
+assert(enable_playlist)
+
+static_library("browser") {
+  sources = [
+    "utils.cc",
+    "utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//catsxp/components/playlist/core/common",
+    "//catsxp/components/playlist/core/common/buildflags",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "utils_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//catsxp/components/playlist/core/browser",
+    "//catsxp/components/playlist/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -1,0 +1,37 @@
+<style include="settings-shared md-select">
+  #catsxp-boss-key-command-text {
+    outline: none;
+    text-align: center;
+    border-width: 1px;
+    border-style: dashed;
+    border-color: var(--line-color);
+    border-radius: 3px;
+    padding: 2px;
+  }
+
+  .md-select {
+    width: 280px;
+  }
+</style>
+<settings-section id="accelerator" page-title="$i18n{accelerator}">
+  <div route-path="default">
+    <cr-link-row class="hr" on-click="onShortcutsClicked_" id="shortcutsButton" label="$i18n{catsxpShortcutsPage}"
+      role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <settings-toggle-button label="$i18n{bossKeyEnabled}" pref="{{prefs.catsxp.accelerator.boss_key_enabled}}">
+    </settings-toggle-button>
+    <div class="settings-box" id="catsxp-boss-key-command-config-container" hidden>
+      <div class="list-frame">
+        <settings-toggle-button label="$i18n{boosKeyStopPlay}"
+          pref="{{prefs.catsxp.accelerator.boss_key_stop_play}}"></settings-toggle-button>
+      </div>
+      <div class="list-frame">
+        <span>$i18n{bossKeyCommandConfig} </span>
+        <span id="catsxp-boss-key-command">
+          <span id="catsxp-boss-key-command-text" tabindex="0">
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+</settings-section>

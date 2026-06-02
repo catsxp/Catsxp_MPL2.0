@@ -1,0 +1,14 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_CATALOG_CATALOG_URL_REQUEST_BUILDER_UTIL_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_CATALOG_CATALOG_URL_REQUEST_BUILDER_UTIL_H_
+
+#include <string>
+
+namespace catsxp_ads {
+
+std::string BuildCatalogUrlPath();
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_CATALOG_CATALOG_URL_REQUEST_BUILDER_UTIL_H_

@@ -1,0 +1,23 @@
+// Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+module catsxp_shields.mojom;
+
+import "catsxp/components/catsxp_shields/core/common/shields_settings.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+interface CatsxpShieldsHost {
+  // Notify the browser process that JavaScript execution has been blocked,
+  // passing the details in |details| as a 16-bit string.
+  OnJavaScriptBlocked(mojo_base.mojom.String16 details);
+  // Notify the browser process that JavaScript execution has been temporary
+  // allowed, passing the details in |details| as a 16-bit string.
+  OnJavaScriptAllowedOnce(mojo_base.mojom.String16 details);
+  // Notify the browser process that a webcompat feature has been invoked.
+  OnWebcompatFeatureInvoked(
+    content_settings.mojom.ContentSettingsType webcompat_settings_type);
+};
+
+interface CatsxpShields {
+  SetShieldsSettings(ShieldsSettings shields_settings);
+};

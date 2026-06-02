@@ -1,0 +1,175 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/creatives/conversions/creative_set_conversion_database_table.h"
+
+#include "base/test/test_future.h"
+#include "catsxp/components/catsxp_ads/core/internal/ad_units/test/ad_test_constants.h"
+#include "catsxp/components/catsxp_ads/core/internal/ad_units/test/ad_test_util.h"
+#include "catsxp/components/catsxp_ads/core/internal/common/test/test_base.h"
+#include "catsxp/components/catsxp_ads/core/internal/creatives/conversions/creative_set_conversion_database_util.h"
+#include "catsxp/components/catsxp_ads/core/internal/creatives/conversions/test/creative_set_conversion_test_util.h"
+#include "catsxp/components/catsxp_ads/core/internal/user_engagement/ad_events/test/ad_event_test_util.h"
+#include "catsxp/components/catsxp_ads/core/mojom/catsxp_ads.mojom.h"
+#include "catsxp/components/catsxp_ads/core/public/ad_units/ad_info.h"
+
+// npm run test -- catsxp_unit_tests --filter=CatsxpAds*
+
+namespace catsxp_ads {
+
+class CatsxpAdsCreativeSetConversionDatabaseTableTest : public test::TestBase {
+ protected:
+  database::table::CreativeSetConversions database_table_;
+};
+
+TEST_F(CatsxpAdsCreativeSetConversionDatabaseTableTest, EmptySave) {
+  // Act
+  database::SaveCreativeSetConversions({});
+
+  // Assert
+  base::test::TestFuture<bool, CreativeSetConversionList> test_future;
+  database_table_.GetUnexpired(
+      test_future.GetCallback<bool, const CreativeSetConversionList&>());
+  const auto [success, creative_set_conversions] = test_future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_THAT(creative_set_conversions, ::testing::IsEmpty());
+}
+
+TEST_F(CatsxpAdsCreativeSetConversionDatabaseTableTest,
+       SaveCreativeSetConversions) {
+  // Arrange
+  const CreativeSetConversionInfo creative_set_conversion_1 =
+      test::BuildCreativeSetConversion(
+          test::kCreativeSetId, /*url_pattern=*/"https://www.catsxp.com/*",
+          /*observation_window=*/base::Days(3));
+
+  const CreativeSetConversionInfo creative_set_conversion_2 =
+      test::BuildCreativeSetConversion(
+          test::kAnotherCreativeSetId,
+          /*url_pattern=*/"https://www.catsxp.com/signup/*",
+          /*observation_window=*/base::Days(30));
+
+  // Act
+  database::SaveCreativeSetConversions(
+      {creative_set_conversion_1, creative_set_conversion_2});
+
+  // Assert
+  base::test::TestFuture<bool, CreativeSetConversionList> test_future;
+  database_table_.GetUnexpired(
+      test_future.GetCallback<bool, const CreativeSetConversionList&>());
+  const auto [success, creative_set_conversions] = test_future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_THAT(creative_set_conversions,
+              ::testing::ElementsAre(creative_set_conversion_1,
+                                     creative_set_conversion_2));
+}
+
+TEST_F(CatsxpAdsCreativeSetConversionDatabaseTableTest,
+       DoNotSaveDuplicateConversion) {
+  // Arrange
+  const CreativeSetConversionInfo creative_set_conversion =
+      test::BuildCreativeSetConversion(
+          test::kCreativeSetId, /*url_pattern=*/"https://www.catsxp.com/*",
+          /*observation_window=*/base::Days(3));
+
+  database::SaveCreativeSetConversions({creative_set_conversion});
+
+  // Act
+  database::SaveCreativeSetConversions({creative_set_conversion});
+
+  // Assert
+  base::test::TestFuture<bool, CreativeSetConversionList> test_future;
+  database_table_.GetUnexpired(
+      test_future.GetCallback<bool, const CreativeSetConversionList&>());
+  const auto [success, creative_set_conversions] = test_future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_THAT(creative_set_conversions,
+              ::testing::ElementsAre(creative_set_conversion));
+}
+
+TEST_F(CatsxpAdsCreativeSetConversionDatabaseTableTest,
+       PurgeExpiredConversions) {
+  // Arrange
+  const CreativeSetConversionInfo creative_set_conversion_1 =
+      test::BuildCreativeSetConversion(
+          test::kCreativeSetId,
+          /*url_pattern=*/"https://www.catsxp.com/*",
+          /*observation_window=*/base::Days(7));
+
+  const CreativeSetConversionInfo creative_set_conversion_2 =
+      test::BuildCreativeSetConversion(
+          test::kAnotherCreativeSetId,
+          /*url_pattern=*/"https://www.catsxp.com/signup/*",
+          /*observation_window=*/base::Days(3));  // Should be purged
+
+  database::SaveCreativeSetConversions(
+      {creative_set_conversion_1, creative_set_conversion_2});
+
+  AdvanceClockBy(base::Days(4));
+
+  // Act
+  database::PurgeExpiredCreativeSetConversions();
+
+  // Assert
+  base::test::TestFuture<bool, CreativeSetConversionList> test_future;
+  database_table_.GetUnexpired(
+      test_future.GetCallback<bool, const CreativeSetConversionList&>());
+  const auto [success, creative_set_conversions] = test_future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_THAT(creative_set_conversions,
+              ::testing::ElementsAre(creative_set_conversion_1));
+}
+
+TEST_F(CatsxpAdsCreativeSetConversionDatabaseTableTest,
+       SaveConversionWithMatchingCreativeSetIdAndType) {
+  // Arrange
+  const CreativeSetConversionInfo creative_set_conversion_1 =
+      test::BuildCreativeSetConversion(
+          test::kCreativeSetId,
+          /*url_pattern=*/"https://www.catsxp.com/1",
+          /*observation_window=*/base::Days(3));
+
+  database::SaveCreativeSetConversions({creative_set_conversion_1});
+
+  const CreativeSetConversionInfo creative_set_conversion_2 =
+      test::BuildCreativeSetConversion(
+          test::kCreativeSetId,
+          /*url_pattern=*/"https://www.catsxp.com/2",
+          /*observation_window=*/base::Days(30));
+
+  // Act
+  database::SaveCreativeSetConversions({creative_set_conversion_2});
+
+  // Assert
+  base::test::TestFuture<bool, CreativeSetConversionList> test_future;
+  database_table_.GetUnexpired(
+      test_future.GetCallback<bool, const CreativeSetConversionList&>());
+  const auto [success, creative_set_conversions] = test_future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_THAT(creative_set_conversions,
+              ::testing::ElementsAre(creative_set_conversion_2));
+}
+
+TEST_F(CatsxpAdsCreativeSetConversionDatabaseTableTest,
+       GetActiveDoesNotReturnDuplicatesWhenMultipleAdEventsMatch) {
+  // Arrange
+  test::BuildAndSaveCreativeSetConversion(
+      test::kCreativeSetId, /*url_pattern=*/"https://www.catsxp.com/*",
+      /*observation_window=*/base::Days(3));
+
+  const AdInfo ad =
+      test::BuildAd(mojom::AdType::kNotificationAd, /*use_random_uuids=*/false);
+  test::RecordAdEvents(ad, mojom::ConfirmationType::kViewedImpression,
+                       /*count=*/3);
+
+  // Act
+  base::test::TestFuture<bool, CreativeSetConversionList> test_future;
+  database_table_.GetActive(
+      test_future.GetCallback<bool, const CreativeSetConversionList&>());
+  const auto [success, creative_set_conversions] = test_future.Take();
+
+  // Assert
+  EXPECT_TRUE(success);
+  EXPECT_THAT(creative_set_conversions, ::testing::SizeIs(1));
+}
+
+}  // namespace catsxp_ads

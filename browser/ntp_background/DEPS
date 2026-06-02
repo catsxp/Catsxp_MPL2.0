@@ -1,0 +1,5 @@
+include_rules = [
+  "+catsxp/components/catsxp_ads/core/browser/service",
+  "+catsxp/components/catsxp_ads/core/mojom",
+  "+catsxp/components/infobars/core/catsxp_confirm_infobar_delegate.h",
+]

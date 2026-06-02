@@ -1,0 +1,16 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_ACCOUNT_CONFIRMATIONS_PAYLOAD_REWARD_CONFIRMATION_PAYLOAD_UTIL_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_ACCOUNT_CONFIRMATIONS_PAYLOAD_REWARD_CONFIRMATION_PAYLOAD_UTIL_H_
+
+#include "base/values.h"
+
+namespace catsxp_ads {
+
+struct RewardInfo;
+
+base::DictValue BuildRewardConfirmationPayload(const RewardInfo& reward);
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_ACCOUNT_CONFIRMATIONS_PAYLOAD_REWARD_CONFIRMATION_PAYLOAD_UTIL_H_

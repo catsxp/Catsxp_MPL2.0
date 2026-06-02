@@ -1,0 +1,5 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+declare_args() {
+  enable_containers = is_linux || is_mac || is_win
+}

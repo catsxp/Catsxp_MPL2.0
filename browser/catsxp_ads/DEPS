@@ -1,0 +1,6 @@
+include_rules = [
+  "+catsxp/components/catsxp_ads/content/browser",
+  "+catsxp/components/catsxp_ads/core/browser/service",
+  "+catsxp/components/catsxp_ads/core/browser/virtual_pref",
+  "+catsxp/components/catsxp_ads/core/mojom",
+]

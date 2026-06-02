@@ -1,0 +1,127 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_SHIELDS_CORE_BROWSER_CATSXP_SHIELDS_P3A_H_
+#define CATSXP_COMPONENTS_CATSXP_SHIELDS_CORE_BROWSER_CATSXP_SHIELDS_P3A_H_
+
+#include "catsxp/components/catsxp_shields/core/common/catsxp_shields_settings_values.h"
+
+class PrefRegistrySimple;
+class PrefService;
+class HostContentSettingsMap;
+
+namespace catsxp_shields {
+
+inline constexpr char kUsagePrefName[] = "catsxp_shields.p3a_usage";
+inline constexpr char kFirstReportedPrefName[] =
+    "catsxp_shields.p3a_first_reported_v2";  // DEPRECATED
+inline constexpr char kFirstReportedRevisionPrefName[] =
+    "catsxp_shields.p3a_first_reported_revision";
+
+inline constexpr char kAdsStrictCountPrefName[] =
+    "catsxp_shields.p3a_ads_strict_domain_count";
+inline constexpr char kAdsStandardCountPrefName[] =
+    "catsxp_shields.p3a_ads_standard_domain_count";
+inline constexpr char kAdsAllowCountPrefName[] =
+    "catsxp_shields.p3a_ads_allow_domain_count";
+inline constexpr char kFPStrictCountPrefName[] =
+    "catsxp_shields.p3a_fp_strict_domain_count";
+inline constexpr char kFPStandardCountPrefName[] =
+    "catsxp_shields.p3a_fp_standard_domain_count";
+inline constexpr char kFPAllowCountPrefName[] =
+    "catsxp_shields.p3a_fp_allow_domain_count";
+
+inline constexpr char kAdsSettingHistogramName[] =
+    "Catsxp.Shields.AdBlockSetting";
+inline constexpr char kFingerprintSettingHistogramName[] =
+    "Catsxp.Shields.FingerprintBlockSetting";
+inline constexpr char kUsageStatusHistogramName[] = "Catsxp.Shields.UsageStatus";
+inline constexpr char kDomainAdsSettingsAboveHistogramName[] =
+    "Catsxp.Shields.DomainAdsSettingsAboveGlobal";
+inline constexpr char kDomainAdsSettingsBelowHistogramName[] =
+    "Catsxp.Shields.DomainAdsSettingsBelowGlobal";
+inline constexpr char kDomainFPSettingsAboveHistogramName[] =
+    "Catsxp.Shields.DomainFingerprintSettingsAboveGlobal";
+inline constexpr char kDomainFPSettingsBelowHistogramName[] =
+    "Catsxp.Shields.DomainFingerprintSettingsBelowGlobal";
+inline constexpr char kForgetFirstPartyHistogramName[] =
+    "Catsxp.Shields.ForgetFirstParty";
+inline constexpr char kUpgradeHTTPSGlobalHistogramName[] =
+    "Catsxp.Shields.UpgradeHTTPSGlobal";
+inline constexpr char kUpgradeHTTPSPerSiteHistogramName[] =
+    "Catsxp.Shields.UpgradeHTTPSPerSite.2";
+inline constexpr char kAutoShredSettingsHistogramName[] =
+    "Catsxp.Shields.AutoShredSettings";
+inline constexpr char kManualShredHistogramName[] = "Catsxp.Shields.ManualShred";
+
+inline constexpr char kManualShredTriggeredPrefName[] =
+    "catsxp_shields.p3a_manual_shred_triggered";
+// Note: append-only enumeration! Never remove any existing values, as this enum
+// is used to bucket a UMA histogram, and removing values breaks that.
+enum ShieldsIconUsage {
+  kNeverClicked,
+  kClicked,
+  kShutOffShields,
+  kChangedPerSiteShields,
+  kSize,
+};
+
+// We save latest value to local state and compare new values with it.
+// The idea is to write to a histogram only the highest value (e.g. we are
+// not interested in |kClicked| event if the user already turned off shields.
+// Sine P3A sends only latest written values, these is enough for our current
+// goals.
+void MaybeRecordShieldsUsageP3A(ShieldsIconUsage usage,
+                                PrefService* local_state);
+
+// Records to global ads setting histogram: Catsxp.Shields.AdBlockSetting
+void RecordShieldsAdsSetting(ControlType setting);
+
+// Records to global FP setting histogram: Catsxp.Shields.FingerprintBlockSetting
+void RecordShieldsFingerprintSetting(ControlType setting);
+
+// To be called when the global setting changes.
+// Will update domain setting count histograms.
+void RecordShieldsDomainSettingCounts(PrefService* profile_prefs,
+                                      bool is_fingerprint,
+                                      ControlType global_setting);
+
+// To be called when a domain setting changes.
+// Will update internal pref counts and update domain setting count histograms.
+void RecordShieldsDomainSettingCountsWithChange(PrefService* profile_prefs,
+                                                bool is_fingerprint,
+                                                ControlType global_setting,
+                                                ControlType* prev_setting,
+                                                ControlType new_setting);
+
+// Records global "forget me when I close this site" setting,
+// and any per-site exceptions.
+void RecordForgetFirstPartySetting(HostContentSettingsMap* map);
+
+// Reports global Auto Shred setting and any per-site exceptions.
+void ReportAutoShredSettingsP3A(const HostContentSettingsMap& map);
+
+// Sets the manual shred pref and reports the value to UMA.
+void RecordManualShredP3A(PrefService& local_state);
+
+// Records global HTTPS upgrade setting and whether any per-site
+// strict (HTTPS-Only) exceptions exist.
+void RecordHTTPSUpgradeSettingP3A(HostContentSettingsMap* map);
+
+void RegisterShieldsP3ALocalPrefs(PrefRegistrySimple* local_state);
+
+void RegisterShieldsP3AProfilePrefs(PrefRegistrySimple* registry);
+void RegisterShieldsP3AProfilePrefsForMigration(PrefRegistrySimple* registry);
+void MigrateObsoleteProfilePrefs(PrefService* profile_prefs);
+
+// To be called at initialization. Will count all domain settings and
+// record to all histograms, if executed for the first time.
+void MaybeRecordInitialShieldsSettings(
+    PrefService* local_state,
+    PrefService* profile_prefs,
+    HostContentSettingsMap* map,
+    ControlType cosmetic_filtering_control_type,
+    ControlType fingerprinting_control_type);
+
+}  // namespace catsxp_shields
+
+#endif  // CATSXP_COMPONENTS_CATSXP_SHIELDS_CORE_BROWSER_CATSXP_SHIELDS_P3A_H_

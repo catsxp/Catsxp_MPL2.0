@@ -1,0 +1,16 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_CREATIVES_NEW_TAB_PAGE_ADS_CREATIVE_NEW_TAB_PAGE_AD_WALLPAPER_TYPE_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_CREATIVES_NEW_TAB_PAGE_ADS_CREATIVE_NEW_TAB_PAGE_AD_WALLPAPER_TYPE_H_
+
+namespace catsxp_ads {
+
+enum class CreativeNewTabPageAdWallpaperType {
+  kUndefined = 0,
+  kImage,
+  kRichMedia
+};
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_CREATIVES_NEW_TAB_PAGE_ADS_CREATIVE_NEW_TAB_PAGE_AD_WALLPAPER_TYPE_H_

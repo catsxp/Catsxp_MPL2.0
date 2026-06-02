@@ -1,0 +1,20 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_SERVING_PREDICTION_MODEL_BASED_INPUT_VARIABLE_SEGMENT_CREATIVE_AD_MODEL_BASED_PREDICTOR_SEGMENT_INPUT_VARIABLES_INFO_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_SERVING_PREDICTION_MODEL_BASED_INPUT_VARIABLE_SEGMENT_CREATIVE_AD_MODEL_BASED_PREDICTOR_SEGMENT_INPUT_VARIABLES_INFO_H_
+
+#include "catsxp/components/catsxp_ads/core/internal/serving/prediction/model_based/input_variable/segment/creative_ad_model_based_predictor_segment_input_variable_info.h"
+
+namespace catsxp_ads {
+
+struct CreativeAdModelBasedPredictorSegmentInputVariablesInfo final {
+  bool operator==(const CreativeAdModelBasedPredictorSegmentInputVariablesInfo&)
+      const = default;
+
+  CreativeAdModelBasedPredictorSegmentInputVariableInfo child_matches;
+  CreativeAdModelBasedPredictorSegmentInputVariableInfo parent_matches;
+};
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_SERVING_PREDICTION_MODEL_BASED_INPUT_VARIABLE_SEGMENT_CREATIVE_AD_MODEL_BASED_PREDICTOR_SEGMENT_INPUT_VARIABLES_INFO_H_

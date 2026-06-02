@@ -1,0 +1,6 @@
+include_rules = [
+  "+catsxp/components/catsxp_shields/core/browser",
+  "+components/content_settings/core/browser",
+  "+components/prefs",
+  "+ios/web/public/thread",
+]

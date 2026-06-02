@@ -1,0 +1,4 @@
+include_rules = [
+  "+catsxp/components/sync/service",
+  "+catsxp/components/sync_device_info",
+]

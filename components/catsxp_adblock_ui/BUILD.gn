@@ -1,0 +1,20 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/common/typescript.gni")
+
+transpile_web_ui("catsxp_adblock_ui") {
+  output_module = false
+  entry_points = [ [
+        "catsxp_adblock",
+        rebase_path("catsxp_adblock.tsx"),
+      ] ]
+
+  resource_name = "catsxp_adblock"
+  imports_from = [ "//catsxp/components/catsxp_adblock_ui/" ]
+}
+
+pack_web_resources("generated_resources") {
+  resource_name = "catsxp_adblock"
+  output_dir = "$root_gen_dir/catsxp/components/catsxp_adblock/resources"
+  deps = [ ":catsxp_adblock_ui" ]
+}

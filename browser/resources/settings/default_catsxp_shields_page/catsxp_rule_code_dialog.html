@@ -1,0 +1,127 @@
+<style include="settings-shared">
+  :host {
+    --line-color: #c2c4cf;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --line-color: #5e6175;
+    }
+  }
+
+  .dialog-title {
+    display: block;
+    line-height: 1.6;
+    font-weight: 700;
+  }
+
+  .dialog-subtitle {
+    margin-top: 10px;
+    display: block;
+    line-height: 1.4;
+    font-size: 90%;
+  }
+
+  .invalid-rule-code {
+    color: red;
+  }
+
+  .rule-code-widget {
+    margin: 0 20px;
+    width: -webkit-fill-available;
+    font-family: Muli, sans-serif;
+    padding: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--line-color);
+    border-image: initial;
+    border-radius: 6px;
+  }
+
+  .rule-code-text {
+    box-sizing: border-box;
+    min-height: 140px;
+    width: 100%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--line-color);
+    border-radius: 6px;
+    padding: 15px 20px;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .rule-code-footer {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto;
+    align-items: center;
+    /* check muli */
+  }
+
+  .clipboard-button {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+  }
+
+  .rule-code-clipboard {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .clipboard-success {
+    transition: opacity 2s cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0;
+  }
+
+  .clipboard-success.is-success-true {
+    opacity: 1;
+  }
+</style>
+
+<!-- input words-->
+<template is="dom-if" if="[[isCodeType('input',codeType)]]">
+  <cr-dialog on-close="handleClose_" show-close-button show-on-attach>
+    <div slot="title">
+      <template is="dom-if" if="[[shouldShowADSHelp_()]]">
+        <span clas="dialog-title">{{dateType}} $i18n{customRule}($i18n{startupParmMode})</span>
+        <span class="dialog-subtitle">$i18n{customFiltersInstructions}</span>
+      </template>
+      <template is="dom-if" if="[[shouldShowCookiesHelp_()]]">
+        <span clas="dialog-title">{{dateType}} $i18n{customRule}($i18n{startupParmMode})</span>
+        <span class="dialog-subtitle">$i18n{cookiesFiltersInstructions}</span>
+      </template>
+    </div>
+
+    <div slot="body" class="rule-code-widget">
+      <textarea autofocus class="rule-code-text" value="{{ruleCode::input}}"></textarea>
+      <div class="rule-code-footer">
+        [[i18n('startupParmRows', ruleCodeRowsCount_)]]
+        <div class="rule-code-clipboard">
+          <span class$="clipboard-success is-success-[[hasCopiedRuleCode_]]">
+            $i18n{catsxpSyncCopied}
+          </span>
+          <cr-icon-button class="clipboard-button" iron-icon="copy" on-click="handleRuleCodeCopy_"
+            aria-label="Copy rule words to clipboard" />
+        </div>
+        <template is="dom-if" if="[[isInvalidRuleCode]]">
+          <div class="invalid-rule-code">
+            *$i18n{startupParmInvalid}
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div slot="button-container">
+      <cr-button class="action-button" on-click="handleDone_">
+        $i18n{confirm}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

@@ -1,0 +1,39 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+assert(is_android)
+
+android_library("java") {
+  resources_package = "org.chromium.chrome.browser.catsxp_shields"
+  sources = [
+    "java/src/org/chromium/chrome/browser/catsxp_shields/CatsxpFirstPartyStorageCleanerUtils.java",
+    "java/src/org/chromium/chrome/browser/catsxp_shields/FirstPartyStorageCleanerAnimationFragment.java",
+    "java/src/org/chromium/chrome/browser/catsxp_shields/FirstPartyStorageCleanerInterface.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//third_party/android_deps:com_airbnb_android_lottie_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+}
+
+# Catsxp-specific resources.
+android_resources("java_resources") {
+  sources = [
+    "java/catsxp-res/layout/catsxp_first_party_storage_cleaner_animation.xml",
+    "java/catsxp-res/layout/catsxp_shred_data_button.xml",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/catsxp_shields/CatsxpFirstPartyStorageCleanerUtils.java" ]
+}

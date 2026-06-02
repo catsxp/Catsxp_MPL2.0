@@ -1,0 +1,24 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+assert(is_android)
+
+source_set("android") {
+  sources = [
+    "ntp_background_images_bridge.cc",
+    "ntp_background_images_bridge.h",
+  ]
+
+  deps = [
+    "//base",
+    "//catsxp/browser:browser_process",
+    "//catsxp/browser/ntp_background",
+    "//catsxp/build/android:jni_headers",
+    "//catsxp/components/catsxp_ads/core/mojom",
+    "//catsxp/components/catsxp_referrals/browser",
+    "//catsxp/components/catsxp_stats/browser",
+    "//catsxp/components/ntp_background_images/browser",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+  ]
+}

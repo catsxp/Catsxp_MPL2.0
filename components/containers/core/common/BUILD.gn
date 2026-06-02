@@ -1,0 +1,20 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/containers/buildflags/buildflags.gni")
+
+assert(enable_containers)
+
+component("features") {
+  defines = [ "IS_CONTAINERS_FEATURES_IMPL" ]
+
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+group("common") {
+  public_deps = [ ":features" ]
+}

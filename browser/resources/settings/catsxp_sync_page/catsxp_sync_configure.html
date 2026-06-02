@@ -1,0 +1,184 @@
+<style include="settings-shared">
+  h1
+  {
+    font-weight: 600;
+    margin-top: 0;
+  }
+
+  .device-list
+  {
+    border-collapse: collapse;
+    font-family: Poppins, sans-serif;
+    font-weight: 500;
+    margin: 24px 0;
+    min-width: 100%;
+    text-align: left;  /* csschecker-disable-line left-right */
+  }
+
+  thead
+  {
+    border-bottom: 1px solid rgb(228, 232, 236);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  tbody
+  {
+    font-size: 14px;
+  }
+
+  th, td
+  {
+    padding: 12px 0;
+  }
+
+  th:first-child,
+  td:first-child
+  {
+    padding-inline-start: 12px;
+  }
+
+  th:last-child,
+  td:last-child
+  {
+    padding-inline-end: 12px;
+  }
+
+
+  .device-name
+  {
+    display: block;
+    max-width: 30ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .device-actions
+  {
+    column-gap: 8px;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+    justify-content: end;
+  }
+
+  .delete-button
+  {
+    height: 24px;
+    margin: 0;
+    width: 24px;
+  }
+
+  section
+  {
+    margin-top: 20px;
+  }
+
+  .chain-actions
+  {
+    column-gap: 8px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto;
+    justify-content: start;
+  }
+</style>
+
+<!-- Device list goes here -->
+<section class="devices">
+  <h1>$i18n{catsxpSyncDeviceListTitle}</h1>
+  <p class="subtitle" id="DeviceListCaption">$i18n{catsxpSyncDeviceListSubtitle}</p>
+
+  <table class="device-list" aria-describedby="DeviceListCaption">
+    <thead>
+      <tr>
+        <th scope="col">
+          <span class="device-name">$i18n{catsxpSyncDeviceListNameColumn}</span>
+        </th>
+        <th scope="col">$i18n{catsxpSyncDeviceListLastActiveColumn}</th>
+        <th scope="col">$i18n{catsxpSyncDeviceListRemoveColumn}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <template is="dom-repeat" items="[[deviceList_]]">
+        <tr>
+          <th scope="row">
+            <template is="dom-if" if="[[item.isCurrentDevice]]">
+              <span class="device-name">[[i18n('catsxpSyncDeviceListNameThisDevice', item.name)]]</span>
+            </template>
+            <template is="dom-if" if="[[!item.isCurrentDevice]]">
+              <span class="device-name">[[item.name]]</span>
+            </template>
+          </th>
+          <td>[[getDeviceDisplayDate(item)]]</td>
+          <td>
+            <template is="dom-if" if="[[item.supportsSelfDelete]]">
+              <cr-icon-button
+                class="delete-button"
+                iron-icon="close-circle"
+                on-click="onDeleteDevice_"
+                aria-label="Delete selected device"></cr-icon-button>
+            </template>
+          </td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+
+  <div class="device-actions">
+    <cr-button on-click="onViewSyncCode_">
+      $i18n{catsxpSyncViewCodeButton}
+    </cr-button>
+    <cr-button class="action-button"
+              on-click="onAddDevice_">
+      $i18n{catsxpSyncAddDevice}
+    </cr-button>
+  </div>
+</section>
+
+<!-- Sync Settings -->
+<section class="settings">
+  <h1>$i18n{catsxpSyncSettingsTitle}</h1>
+  <p>$i18n{catsxpSyncSettingsSubtitle}</p>
+  <settings-sync-controls sync-status="[[syncStatus]]">
+  </settings-sync-controls>
+</section>
+
+<div class="chain-actions" >
+  <section class="cancel">
+    <cr-button class="action-button"
+      on-click="onResetSyncChain_">
+      $i18n{catsxpSyncResetButton}
+    </cr-button>
+  </section>
+
+  <section class="cancel">
+    <cr-button
+      on-click="onRequestStopClearData_">
+      $i18n{catsxpSyncForceCloseButton}
+    </cr-button>
+  </section>
+
+  <section class="cancel">
+    <cr-button
+      on-click="onPermanentlyDeleteSyncAccount_">
+      $i18n{catsxpSyncDeleteAccountButtonAndDialogTitle}
+    </cr-button>
+  </section>
+</div>
+
+<template is="dom-if" if="[[syncCodeDialogType_]]" restamp>
+  <settings-catsxp-sync-code-dialog
+    sync-code="[[syncCode]]"
+    code-type="{{syncCodeDialogType_}}"
+    on-done="onSyncCodeDialogDone_">
+  </settings-catsxp-sync-code-dialog>
+</template>
+
+<template is="dom-if" if="[[syncDoingDeleteAccount_]]" restamp>
+  <settings-catsxp-sync-delete-account-dialog
+    doing-delete-account="{{syncDoingDeleteAccount_}}"
+  >
+  </settings-catsxp-sync-delete-account-dialog>
+</template>

@@ -1,0 +1,21 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_ACCOUNT_UTILITY_REFILL_CONFIRMATION_TOKENS_URL_REQUESTS_REQUEST_SIGNED_TOKENS_REQUEST_SIGNED_TOKENS_URL_REQUEST_UTIL_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_ACCOUNT_UTILITY_REFILL_CONFIRMATION_TOKENS_URL_REQUESTS_REQUEST_SIGNED_TOKENS_REQUEST_SIGNED_TOKENS_URL_REQUEST_UTIL_H_
+
+#include <optional>
+#include <string>
+
+namespace base {
+class DictValue;
+}  // namespace base
+
+namespace catsxp_ads {
+
+std::optional<bool> ParseIsEligible(const base::DictValue& dict);
+
+std::optional<std::string> ParseNonce(const base::DictValue& dict);
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_ACCOUNT_UTILITY_REFILL_CONFIRMATION_TOKENS_URL_REQUESTS_REQUEST_SIGNED_TOKENS_REQUEST_SIGNED_TOKENS_URL_REQUEST_UTIL_H_

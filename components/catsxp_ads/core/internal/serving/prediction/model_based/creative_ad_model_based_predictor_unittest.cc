@@ -1,0 +1,85 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/serving/prediction/model_based/creative_ad_model_based_predictor.h"
+
+#include "base/test/scoped_feature_list.h"
+#include "catsxp/components/catsxp_ads/core/internal/common/test/test_base.h"
+#include "catsxp/components/catsxp_ads/core/internal/common/test/time_test_util.h"
+#include "catsxp/components/catsxp_ads/core/internal/creatives/notification_ads/creative_notification_ad_info.h"
+#include "catsxp/components/catsxp_ads/core/internal/creatives/notification_ads/test/creative_notification_ad_test_util.h"
+#include "catsxp/components/catsxp_ads/core/internal/serving/prediction/model_based/creative_notification_ad_model_based_predictor_feature.h"
+#include "catsxp/components/catsxp_ads/core/internal/serving/targeting/user_model/latent_interest/latent_interest_user_model_info.h"
+#include "catsxp/components/catsxp_ads/core/internal/serving/targeting/user_model/user_model_info.h"
+#include "catsxp/components/catsxp_ads/core/internal/user_engagement/ad_events/test/ad_event_builder_test_util.h"
+#include "catsxp/components/catsxp_ads/core/mojom/catsxp_ads.mojom.h"
+
+// npm run test -- catsxp_unit_tests --filter=CatsxpAds*
+
+namespace catsxp_ads {
+
+class CatsxpAdsCreativeAdModelBasedPredictorTest : public test::TestBase {};
+
+TEST_F(CatsxpAdsCreativeAdModelBasedPredictorTest, PredictCreativeAd) {
+  // Arrange
+  const base::test::ScopedFeatureList scoped_feature_list(
+      kCreativeNotificationAdModelBasedPredictorFeature);
+
+  CreativeNotificationAdList creative_ads;
+  const CreativeNotificationAdInfo creative_ad =
+      test::BuildCreativeNotificationAd(/*use_random_uuids=*/
+                                        true);
+  creative_ads.push_back(creative_ad);
+
+  const UserModelInfo user_model{
+      IntentUserModelInfo{SegmentList{"parent-child"}},
+      LatentInterestUserModelInfo{SegmentList{"parent-child"}},
+      InterestUserModelInfo{SegmentList{"parent-child"}}};
+
+  AdEventList ad_events;
+  const AdEventInfo ad_event =
+      test::BuildAdEvent(creative_ad, mojom::AdType::kNotificationAd,
+                         mojom::ConfirmationType::kViewedImpression,
+                         /*created_at=*/test::Now(), /*use_random_uuids=*/true);
+  ad_events.push_back(ad_event);
+
+  // Act & Assert
+  EXPECT_TRUE(MaybePredictCreativeAd(creative_ads, user_model, ad_events));
+}
+
+TEST_F(CatsxpAdsCreativeAdModelBasedPredictorTest, DoNotPredictCreativeAd) {
+  // Arrange
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kCreativeNotificationAdModelBasedPredictorFeature,
+      {{"child_intent_segment_predictor_weight", "0.0"},
+       {"parent_intent_segment_predictor_weight", "0.0"},
+       {"child_latent_interest_segment_predictor_weight", "0.0"},
+       {"parent_latent_interest_segment_predictor_weight", "0.0"},
+       {"child_interest_segment_predictor_weight", "0.0"},
+       {"parent_interest_segment_predictor_weight", "0.0"},
+       {"untargeted_segment_predictor_weight", "0.0"},
+       {"last_seen_ad_predictor_weight", "0.0"}});
+
+  CreativeNotificationAdList creative_ads;
+  const CreativeNotificationAdInfo creative_ad =
+      test::BuildCreativeNotificationAd(/*use_random_uuids=*/
+                                        true);
+  creative_ads.push_back(creative_ad);
+
+  const UserModelInfo user_model{
+      IntentUserModelInfo{SegmentList{"parent-child"}},
+      LatentInterestUserModelInfo{SegmentList{"parent-child"}},
+      InterestUserModelInfo{SegmentList{"parent-child"}}};
+
+  AdEventList ad_events;
+  const AdEventInfo ad_event =
+      test::BuildAdEvent(creative_ad, mojom::AdType::kNotificationAd,
+                         mojom::ConfirmationType::kViewedImpression,
+                         /*created_at=*/test::Now(), /*use_random_uuids=*/true);
+  ad_events.push_back(ad_event);
+
+  // Act & Assert
+  EXPECT_FALSE(MaybePredictCreativeAd(creative_ads, user_model, ad_events));
+}
+
+}  // namespace catsxp_ads

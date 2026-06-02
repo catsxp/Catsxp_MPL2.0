@@ -1,0 +1,27 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+source_set("tooltips") {
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "ads_captcha_tooltip.cc",
+      "ads_captcha_tooltip.h",
+      "ads_tooltips_controller.cc",
+      "ads_tooltips_controller.h",
+      "ads_tooltips_delegate_impl.cc",
+      "ads_tooltips_delegate_impl.h",
+    ]
+
+    deps += [
+      "//base",
+      "//catsxp/browser/profiles:util",
+      "//catsxp/browser/ui/catsxp_tooltips",
+      "//catsxp/components/catsxp_ads/browser",
+      "//catsxp/components/resources:strings_grit",
+      "//chrome/browser/profiles:profile",
+      "//ui/base",
+    ]
+  }
+}

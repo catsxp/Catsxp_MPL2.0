@@ -1,0 +1,10 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/containers/buildflags/buildflags.gni")
+import("//build/buildflag_header.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_CONTAINERS=$enable_containers" ]
+}

@@ -1,0 +1,36 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/common/typescript.gni")
+import("//catsxp/components/playlist/core/common/buildflags/buildflags.gni")
+
+assert(enable_playlist_webui)
+
+transpile_web_ui("playlist_ui") {
+  output_module = false
+  entry_points = [
+    [
+      "playlist",
+      rebase_path("playlist.tsx"),
+    ],
+    [
+      "videoFrameContents",
+      rebase_path("videoFrameContents.tsx"),
+    ],
+  ]
+
+  imports_from = [ "//catsxp/components/playlist/content/browser/resources" ]
+
+  public_deps = [
+    "//catsxp/components/playlist/core/common/mojom:mojom_js",
+    "//mojo/public/mojom/base",
+  ]
+
+  resource_name = "playlist"
+}
+
+pack_web_resources("generated_resources") {
+  resource_name = "playlist"
+  output_dir =
+      "$root_gen_dir/catsxp/components/playlist/content/browser/resources"
+  deps = [ ":playlist_ui" ]
+}

@@ -1,0 +1,45 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    --cr-input-background-color: var(--google-grey-100);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --cr-input-background-color: rgba(0, 0, 0, .3);
+    }
+  }
+
+  .editor-box {
+    margin: 5px;
+    width: -webkit-fill-available;
+    font-family: Muli, sans-serif;
+  }
+
+  .textbox {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 140px;
+    min-width: 640px;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+</style>
+
+<div>
+  <div class="editor-box">
+    <textarea
+      disabled="[[!prefs.catsxp.ad_block.developer_mode.value]]"
+      type="text"
+      spellcheck="false"
+      class="textbox"
+      on-input="handleInputChange_"
+      value="{{value}}">
+    </textarea>
+  </div>
+  <cr-button
+    on-click="handleSave_"
+    disabled="[[!prefs.catsxp.ad_block.developer_mode.value]]">
+    $i18n{adblockSaveChangesButtonLabel}
+  </cr-button>
+</div>

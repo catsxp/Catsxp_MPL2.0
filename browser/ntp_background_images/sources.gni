@@ -1,0 +1,47 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/ntp_background_images/buildflags/buildflags.gni")
+
+catsxp_browser_ntp_background_images_sources = [
+  "//catsxp/browser/ntp_background_images/view_counter_service_factory.cc",
+  "//catsxp/browser/ntp_background_images/view_counter_service_factory.h",
+]
+
+catsxp_browser_ntp_background_images_deps = [
+  "//base",
+  "//catsxp/browser:browser_process",
+  "//catsxp/browser/profiles:util",
+  "//catsxp/components/catsxp_ads/browser",
+  "//catsxp/components/catsxp_stats/browser",
+  "//catsxp/components/constants",
+  "//catsxp/components/ntp_background_images/browser",
+  "//catsxp/components/ntp_background_images/buildflags",
+  "//catsxp/components/ntp_background_images/common",
+  "//catsxp/components/p3a",
+  "//catsxp/components/p3a_utils",
+  "//chrome/browser:browser_process",
+  "//chrome/browser/profiles:profile",
+  "//chrome/common",
+  "//components/keyed_service/content",
+  "//components/pref_registry",
+  "//components/prefs",
+  "//content/public/browser",
+]
+
+if (enable_custom_background) {
+  catsxp_browser_ntp_background_images_deps +=
+      [ "//catsxp/browser/ntp_background_images:ntp_custom_background_images" ]
+}
+
+if (is_android) {
+  catsxp_browser_ntp_background_images_sources += [
+    "//catsxp/browser/ntp_background_images/android/ntp_background_images_bridge.cc",
+    "//catsxp/browser/ntp_background_images/android/ntp_background_images_bridge.h",
+  ]
+
+  catsxp_browser_ntp_background_images_deps += [
+    "//catsxp/build/android:jni_headers",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+  ]
+}

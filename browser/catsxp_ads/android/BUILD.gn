@@ -1,0 +1,35 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/build/config.gni")
+import("//catsxp/components/catsxp_ads/buildflags/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+assert(is_android)
+assert(enable_catsxp_ads)
+
+source_set("android") {
+  sources = [
+    "catsxp_ads_native_helper.cc",
+    "catsxp_ads_native_helper.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//catsxp/browser/catsxp_ads",
+    "//catsxp/browser/catsxp_ads/android:jni_headers",
+    "//catsxp/components/catsxp_ads/browser",
+    "//catsxp/components/catsxp_ads/core/public:headers",
+    "//chrome/browser/profiles:profile",
+    "//components/prefs",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/org/chromium/chrome/browser/CatsxpAdsNativeHelper.java",
+    "java/org/chromium/chrome/browser/device_id/DeviceIdImplAndroid.java",
+    "java/org/chromium/chrome/browser/dialogs/CatsxpAdsSignupDialog.java",
+    "java/org/chromium/chrome/browser/notifications/CatsxpAds.java",
+  ]
+}

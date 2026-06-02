@@ -1,0 +1,4 @@
+include_rules = [
+  "+catsxp/components/catsxp_ads/core/mojom",
+  "+catsxp/components/catsxp_stats/browser",
+]

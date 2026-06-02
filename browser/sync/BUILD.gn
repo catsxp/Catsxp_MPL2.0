@@ -1,0 +1,33 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+source_set("sync") {
+  sources = [
+    "catsxp_sync_service_impl_delegate.cc",
+    "catsxp_sync_service_impl_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/sync/service",
+    "//components/sync_device_info",
+  ]
+}
+
+if (!is_ios) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "network_time_helper_browsertest.cc" ]
+
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//catsxp/components/catsxp_sync:network_time_helper",
+      "//catsxp/components/catsxp_sync:prefs",
+      "//chrome/browser",
+      "//chrome/test:test_support",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+}

@@ -1,0 +1,117 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/browser/catsxp_ads/creatives/search_result_ad/creative_search_result_ad_clicked_infobar_delegate.h"
+
+#include <memory>
+#include <string_view>
+
+#include "base/check.h"
+#include "catsxp/components/catsxp_ads/core/public/prefs/pref_names.h"
+#include "catsxp/grit/catsxp_generated_resources.h"
+#include "build/build_config.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
+#else  // BUILDFLAG(IS_ANDROID)
+#include "catsxp/browser/infobars/catsxp_confirm_infobar_creator.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+namespace catsxp_ads {
+
+namespace {
+
+constexpr std::string_view kLearnMoreUrl =
+    "https://search.catsxp.com/help/conversion-reporting";
+
+std::unique_ptr<infobars::InfoBar> CreateSearchResultAdClickedInfoBar() {
+#if BUILDFLAG(IS_ANDROID)
+  return CreateConfirmInfoBar(
+      std::make_unique<CreativeSearchResultAdClickedInfoBarDelegate>());
+#else   // BUILDFLAG(IS_ANDROID)
+  return CreateCatsxpConfirmInfoBar(
+      std::make_unique<CreativeSearchResultAdClickedInfoBarDelegate>());
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+}  // namespace
+
+// static
+void CreativeSearchResultAdClickedInfoBarDelegate::Create(
+    content::WebContents* web_contents,
+    PrefService* prefs) {
+  CHECK(web_contents);
+  CHECK(prefs);
+
+  if (!prefs->GetBoolean(prefs::kShouldShowSearchResultAdClickedInfoBar)) {
+    return;
+  }
+  prefs->SetBoolean(prefs::kShouldShowSearchResultAdClickedInfoBar, false);
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (infobar_manager) {
+    infobar_manager->AddInfoBar(CreateSearchResultAdClickedInfoBar());
+  }
+}
+
+CreativeSearchResultAdClickedInfoBarDelegate::
+    CreativeSearchResultAdClickedInfoBarDelegate() = default;
+
+CreativeSearchResultAdClickedInfoBarDelegate::
+    ~CreativeSearchResultAdClickedInfoBarDelegate() = default;
+
+infobars::InfoBarDelegate::InfoBarIdentifier
+CreativeSearchResultAdClickedInfoBarDelegate::GetIdentifier() const {
+  return SEARCH_RESULT_AD_CLICKED_INFOBAR_DELEGATE;
+}
+
+ui::ImageModel CreativeSearchResultAdClickedInfoBarDelegate::GetIcon() const {
+#if BUILDFLAG(IS_ANDROID)
+  return ui::ImageModel();
+#else   // BUILDFLAG(IS_ANDROID)
+  return ui::ImageModel::FromVectorIcon(vector_icons::kProductIcon,
+                                        ui::kColorIcon, /*icon_size=*/20);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+std::u16string CreativeSearchResultAdClickedInfoBarDelegate::GetMessageText()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_CATSXP_ADS_SEARCH_RESULT_AD_CLICKED_INFOBAR_MESSAGE);
+}
+
+int CreativeSearchResultAdClickedInfoBarDelegate::GetButtons() const {
+  return BUTTON_NONE;
+}
+
+std::u16string CreativeSearchResultAdClickedInfoBarDelegate::GetLinkText()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_CATSXP_ADS_SEARCH_RESULT_AD_LEARN_MORE_OPT_OUT_CHOICES_LABEL);
+}
+
+GURL CreativeSearchResultAdClickedInfoBarDelegate::GetLinkURL() const {
+  return GURL(kLearnMoreUrl);
+}
+
+bool CreativeSearchResultAdClickedInfoBarDelegate::LinkClicked(
+    WindowOpenDisposition disposition) {
+  ConfirmInfoBarDelegate::LinkClicked(disposition);
+  // Return true to immediately close the infobar.
+  return true;
+}
+
+bool CreativeSearchResultAdClickedInfoBarDelegate::ShouldSupportMultiLine()
+    const {
+  return true;
+}
+
+}  // namespace catsxp_ads

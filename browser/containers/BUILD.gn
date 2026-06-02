@@ -1,0 +1,76 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/containers/buildflags/buildflags.gni")
+
+assert(enable_containers)
+
+source_set("containers") {
+  sources = [
+    "container_specifier_utils.cc",
+    "container_specifier_utils.h",
+    "container_tab_tracker.cc",
+    "container_tab_tracker.h",
+    "containers_service_delegate.cc",
+    "containers_service_delegate.h",
+    "containers_service_factory.cc",
+    "containers_service_factory.h",
+    "used_container_storage_partitions.cc",
+    "used_container_storage_partitions.h",
+  ]
+
+  deps = [
+    "//catsxp/components/containers/content/browser",
+    "//catsxp/components/containers/core/browser",
+    "//catsxp/components/containers/core/common",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs",
+    "//chrome/common:buildflags",
+    "//components/sessions",
+    "//content/public/browser",
+    "//crypto",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "containers_browsertest.cc" ]
+
+  deps = [
+    ":containers",
+    "//catsxp/components/containers/content/browser",
+    "//catsxp/components/containers/core/browser",
+    "//catsxp/components/containers/core/browser:test_support",
+    "//catsxp/components/containers/core/common:features",
+    "//catsxp/components/containers/core/mojom",
+    "//chrome/browser",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/ui/zoom",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//third_party/blink/public:blink_headers",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "containers_service_delegate_unittest.cc" ]
+
+  deps = [
+    ":containers",
+    "//catsxp/components/containers/content/browser",
+    "//catsxp/components/containers/core/browser",
+    "//catsxp/components/containers/core/common:features",
+    "//catsxp/components/containers/core/mojom",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/sessions:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

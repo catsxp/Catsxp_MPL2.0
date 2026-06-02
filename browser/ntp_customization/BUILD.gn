@@ -1,0 +1,12 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//build/config/android/rules.gni")
+
+# Catsxp override for NtpCustomizationUtils.isInNarrowWindowOnTablet (bytecode
+# redirects calls to this). Depends only on UiConfig to avoid circular deps
+# with //chrome/browser/ntp_customization:java.
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ntp_customization/CatsxpNtpCustomizationUtils.java" ]
+
+  deps = [ "//components/browser_ui/widget/android:java" ]
+}

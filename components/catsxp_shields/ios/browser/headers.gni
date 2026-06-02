@@ -1,0 +1,8 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+catsxp_shields_component_public_headers = [
+  "//catsxp/components/catsxp_shields/ios/browser/catsxp_shields_settings_bridge.h",
+  "$root_gen_dir/catsxp/components/catsxp_shields/ios/common/shields_settings.mojom.objc.h",
+]
+catsxp_shields_component_public_deps =
+    [ "//catsxp/components/catsxp_shields/ios/common:mojom" ]

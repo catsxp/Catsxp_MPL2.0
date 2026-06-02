@@ -1,0 +1,28 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/catsxp_ads/buildflags/buildflags.gni")
+import("//catsxp/components/common/typescript.gni")
+
+assert(enable_catsxp_ads)
+
+transpile_web_ui("ads_internals_ui") {
+  output_module = false
+  entry_points = [ [
+        "ads_internals",
+        rebase_path("ads_internals.tsx"),
+      ] ]
+
+  public_deps = [
+    "//catsxp/components/services/bat_ads/public/interfaces:mojom_js",
+    "//mojo/public/mojom/base",
+  ]
+
+  resource_name = "ads_internals"
+  imports_from = [ "//catsxp/components/catsxp_ads/browser/resources/" ]
+}
+
+pack_web_resources("generated_resources") {
+  resource_name = "ads_internals"
+  output_dir = "$root_gen_dir/catsxp/components/catsxp_ads/browser/resources"
+  deps = [ ":ads_internals_ui" ]
+}

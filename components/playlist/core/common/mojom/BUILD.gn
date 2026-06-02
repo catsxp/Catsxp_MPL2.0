@@ -1,0 +1,15 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/playlist/core/common/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_playlist)
+
+mojom("mojom") {
+  generate_java = true
+  sources = [ "playlist.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}

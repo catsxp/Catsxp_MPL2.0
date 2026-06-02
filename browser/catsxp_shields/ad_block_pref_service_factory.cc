@@ -1,0 +1,71 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/browser/catsxp_shields/ad_block_pref_service_factory.h"
+
+#include <memory>
+#include <utility>
+
+#include "base/no_destructor.h"
+#include "catsxp/browser/catsxp_browser_process.h"
+#include "catsxp/components/catsxp_shields/content/browser/ad_block_pref_service.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/proxy_service_factory.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/proxy_config/pref_proxy_config_tracker.h"
+#include "net/proxy_resolution/proxy_config_service.h"
+
+namespace catsxp_shields {
+
+// static
+AdBlockPrefService* AdBlockPrefServiceFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<AdBlockPrefService*>(
+      GetInstance()->GetServiceForBrowserContext(context,
+                                                 /*create_service=*/true));
+}
+
+// static
+AdBlockPrefServiceFactory* AdBlockPrefServiceFactory::GetInstance() {
+  static base::NoDestructor<AdBlockPrefServiceFactory> instance;
+  return instance.get();
+}
+
+AdBlockPrefServiceFactory::AdBlockPrefServiceFactory()
+    : BrowserContextKeyedServiceFactory(
+          "AdBlockPrefService",
+          BrowserContextDependencyManager::GetInstance()) {}
+
+AdBlockPrefServiceFactory::~AdBlockPrefServiceFactory() = default;
+
+std::unique_ptr<KeyedService>
+AdBlockPrefServiceFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  auto service = std::make_unique<AdBlockPrefService>(
+      profile->IsRegularProfile(), profile->GetPrefs(),
+      g_browser_process->local_state(),
+      g_browser_process->GetApplicationLocale());
+
+  auto pref_proxy_config_tracker =
+      ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
+          profile->GetPrefs(), nullptr);
+  auto proxy_config_service = ProxyServiceFactory::CreateProxyConfigService(
+      pref_proxy_config_tracker.get(), profile);
+  service->StartProxyTracker(std::move(pref_proxy_config_tracker),
+                             std::move(proxy_config_service));
+  return service;
+}
+
+content::BrowserContext* AdBlockPrefServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return GetBrowserContextRedirectedInIncognito(context);
+}
+
+bool AdBlockPrefServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+}  // namespace catsxp_shields

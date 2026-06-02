@@ -1,0 +1,15 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_USER_ENGAGEMENT_CONVERSIONS_CONVERSION_CONVERSION_BUILDER_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_USER_ENGAGEMENT_CONVERSIONS_CONVERSION_CONVERSION_BUILDER_H_
+
+namespace catsxp_ads {
+
+struct AdEventInfo;
+struct ConversionInfo;
+
+ConversionInfo BuildConversion(const AdEventInfo& ad_event);
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_USER_ENGAGEMENT_CONVERSIONS_CONVERSION_CONVERSION_BUILDER_H_

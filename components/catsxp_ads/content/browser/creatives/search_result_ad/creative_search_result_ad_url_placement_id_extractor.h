@@ -1,0 +1,18 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CONTENT_BROWSER_CREATIVES_SEARCH_RESULT_AD_CREATIVE_SEARCH_RESULT_AD_URL_PLACEMENT_ID_EXTRACTOR_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CONTENT_BROWSER_CREATIVES_SEARCH_RESULT_AD_CREATIVE_SEARCH_RESULT_AD_URL_PLACEMENT_ID_EXTRACTOR_H_
+
+#include <optional>
+#include <string>
+
+class GURL;
+
+namespace catsxp_ads {
+
+std::optional<std::string> MaybeExtractCreativeAdPlacementIdFromUrl(
+    const GURL& url);
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CONTENT_BROWSER_CREATIVES_SEARCH_RESULT_AD_CREATIVE_SEARCH_RESULT_AD_URL_PLACEMENT_ID_EXTRACTOR_H_

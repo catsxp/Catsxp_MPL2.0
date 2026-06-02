@@ -1,0 +1,117 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CONTAINERS_CORE_BROWSER_CONTAINERS_SERVICE_H_
+#define CATSXP_COMPONENTS_CONTAINERS_CORE_BROWSER_CONTAINERS_SERVICE_H_
+
+#include <memory>
+#include <string>
+#include <string_view>
+
+#include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "catsxp/components/containers/core/browser/container_specifier.h"
+#include "catsxp/components/containers/core/browser/containers_service_observer.h"
+#include "catsxp/components/containers/core/mojom/containers.mojom-forward.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
+
+namespace containers {
+
+// Handles container-related operations.
+class ContainersService : public KeyedService {
+ public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    using OnReferencedContainerIdsReadyCallback =
+        base::OnceCallback<void(const base::flat_set<std::string>&)>;
+    using DeleteContainerStorageCallback =
+        base::OnceCallback<void(bool success)>;
+
+    // Returns the container ids referenced by tab restore, session service and
+    // currently opened tabs.
+    virtual void GetReferencedContainerIds(
+        OnReferencedContainerIdsReadyCallback callback) = 0;
+
+    // Deletes the storage for the container with the given id.
+    virtual void DeleteContainerStorage(
+        const std::string& id,
+        DeleteContainerStorageCallback callback) = 0;
+  };
+
+  ContainersService(PrefService* prefs, std::unique_ptr<Delegate> delegate);
+  ~ContainersService() override;
+
+  ContainersService(const ContainersService&) = delete;
+  ContainersService& operator=(const ContainersService&) = delete;
+
+  void Shutdown() override;
+
+  void AddObserver(ContainersServiceObserver* observer);
+  void RemoveObserver(ContainersServiceObserver* observer);
+
+  // Caches a used-container snapshot: synced metadata when the id exists in
+  // the synced list, otherwise a placeholder from `CreateUnknownContainer`.
+  void MarkContainerUsed(std::string_view container_id);
+
+  // Creates a temporary container and persists it locally.
+  mojom::ContainerPtr CreateAndPersistTemporaryContainer();
+
+  // Returns the runtime container with the given `id`. Runtime containers are
+  // containers that are currently in use by the user. This can be a synced
+  // container or a removed, but still used container.
+  mojom::ContainerPtr GetRuntimeContainerById(std::string_view id) const;
+
+  // Returns the runtime container with the given `name`.
+  mojom::ContainerPtr GetRuntimeContainerByName(std::string_view name) const;
+
+  // Returns the list of user-editable containers.
+  std::vector<mojom::ContainerPtr> GetContainers() const;
+
+  // Returns ids of containers that have been used in this profile.
+  std::vector<std::string> GetUsedContainerIds() const;
+
+  // Whether the Containers controls (menus, management UI) should be shown.
+  bool ShouldShowContainerControls() const;
+
+  // Returns the container id for the given container specifier.
+  std::optional<std::string> GetContainerIdFromContainerSpecifier(
+      const ContainerSpecifier& container_specifier) const;
+
+  void ScheduleOrphanedContainersCleanupForTesting();
+
+ private:
+  // Called when the synced containers list changes.
+  void OnSyncedContainersChanged();
+
+  // Refreshes used-container snapshots from the synced containers list so they
+  // do not stay stale (names, icons, etc.). This is called when the synced
+  // containers list changes.
+  void RefreshLocallyUsedContainersFromSyncedList();
+
+  // Schedules the cleanup of orphaned containers. Orphaned containers are
+  // containers that are not referenced by any tab restore or session service.
+  void ScheduleOrphanedContainersCleanup();
+
+  // Called when the container ids referenced by the current profile are ready.
+  void OnReferencedContainerIdsReady(const base::flat_set<std::string>& ids);
+
+  // Called when the storage for the container with the given id is deleted.
+  void OnContainerStorageDeleted(const std::string& id, bool success);
+
+  raw_ref<PrefService> prefs_;
+  std::unique_ptr<Delegate> delegate_;
+  PrefChangeRegistrar pref_change_registrar_;
+  base::ObserverList<ContainersServiceObserver> observers_;
+  base::WeakPtrFactory<ContainersService> weak_factory_{this};
+};
+
+}  // namespace containers
+
+#endif  // CATSXP_COMPONENTS_CONTAINERS_CORE_BROWSER_CONTAINERS_SERVICE_H_

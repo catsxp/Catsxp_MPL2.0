@@ -1,0 +1,10 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+catsxp_browser_sync_sources = [
+  "//catsxp/browser/sync/catsxp_sync_alerts_service.cc",
+  "//catsxp/browser/sync/catsxp_sync_alerts_service.h",
+  "//catsxp/browser/sync/catsxp_sync_alerts_service_factory.cc",
+  "//catsxp/browser/sync/catsxp_sync_alerts_service_factory.h",
+]
+
+catsxp_browser_sync_deps = []

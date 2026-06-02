@@ -1,0 +1,33 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+assert(!is_android && !is_ios)
+
+component("browser") {
+  output_name = "commands_browser"
+  defines = [ "IS_COMMANDS_BROWSER_IMPL" ]
+
+  sources = [
+    "accelerator_pref_manager.cc",
+    "accelerator_pref_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ui/base",
+  ]
+
+  public_deps = [ "//catsxp/components/commands/common" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "accelerator_pref_manager_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}

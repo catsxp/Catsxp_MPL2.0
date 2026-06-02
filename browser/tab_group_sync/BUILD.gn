@@ -1,0 +1,9 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/CatsxpStartupHelper.java" ]
+
+  deps = [ "//chrome/browser/tab_group_sync:java" ]
+}

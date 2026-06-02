@@ -1,0 +1,30 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/account/deposits/cash_deposit.h"
+
+#include <optional>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "catsxp/components/catsxp_ads/core/internal/account/deposits/deposit_info.h"
+
+namespace catsxp_ads {
+
+void CashDeposit::GetValue(const std::string& creative_instance_id,
+                           GetDepositCallback callback) {
+  deposits_database_table_.GetForCreativeInstanceId(
+      creative_instance_id,
+      base::BindOnce(
+          [](GetDepositCallback callback, bool success,
+             std::optional<DepositInfo> deposit) {
+            if (!success || !deposit) {
+              return std::move(callback).Run(/*success=*/false,
+                                             /*value=*/0.0);
+            }
+
+            std::move(callback).Run(/*success=*/true, deposit->value);
+          },
+          std::move(callback)));
+}
+
+}  // namespace catsxp_ads

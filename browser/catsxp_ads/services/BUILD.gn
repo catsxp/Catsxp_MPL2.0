@@ -1,0 +1,23 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/catsxp_ads/buildflags/buildflags.gni")
+
+assert(enable_catsxp_ads)
+
+source_set("services") {
+  sources = [
+    "bat_ads_service_factory_impl.cc",
+    "bat_ads_service_factory_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//catsxp/app:catsxp_generated_resources_grit",
+    "//catsxp/components/catsxp_ads/browser",
+    "//catsxp/components/catsxp_ads/core",
+    "//catsxp/components/services/bat_ads:lib",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+  ]
+}

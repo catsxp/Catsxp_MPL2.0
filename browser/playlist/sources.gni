@@ -1,0 +1,33 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+catsxp_browser_playlist_sources = [
+  "//catsxp/browser/playlist/playlist_service_factory.cc",
+  "//catsxp/browser/playlist/playlist_service_factory.h",
+]
+
+catsxp_browser_playlist_deps = [
+  "//base",
+  "//catsxp/components/playlist/content/browser",
+  "//catsxp/components/playlist/core/browser",
+  "//chrome/browser:browser_process",
+  "//chrome/browser/profiles:profile",
+  "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+  "//chrome/common",
+  "//components/keyed_service/content",
+  "//components/pref_registry",
+]
+
+if (is_android) {
+  catsxp_browser_playlist_sources +=
+      [ "//catsxp/browser/playlist/android/playlist_service_factory_android.cc" ]
+
+  catsxp_browser_playlist_deps += [
+    "//catsxp/build/android:jni_headers",
+    "//mojo/public/cpp/bindings",
+  ]
+} else {
+  catsxp_browser_playlist_sources += [
+    "//catsxp/browser/playlist/playlist_data_source.cc",
+    "//catsxp/browser/playlist/playlist_data_source.h",
+  ]
+}

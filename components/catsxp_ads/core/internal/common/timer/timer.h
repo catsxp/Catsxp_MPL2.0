@@ -1,0 +1,68 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_COMMON_TIMER_TIMER_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_COMMON_TIMER_TIMER_H_
+
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/timer/wall_clock_timer.h"
+
+namespace base {
+class Time;
+class TimeDelta;
+}  // namespace base
+
+namespace catsxp_ads {
+
+// A one-shot timer backed by `base::WallClockTimer`, so it fires correctly even
+// if `TimeTicks` freeze during system suspend. `StartWithPrivacy` randomizes
+// the delay for privacy.
+class Timer final {
+ public:
+  Timer();
+
+  Timer(const Timer&) = delete;
+  Timer& operator=(const Timer&) = delete;
+
+  ~Timer();
+
+  // `location` provides basic info where the timer was posted from. Start a
+  // timer to run at the given `delay` from now. If the timer is already
+  // running, it will be replaced to call the given `user_task`. Returns the
+  // time the delayed task will be fired.
+  base::Time Start(const base::Location& location,
+                   base::TimeDelta delay,
+                   base::OnceClosure user_task);
+
+  // `location` provides basic info where the timer was posted from. Returns the
+  // time the delayed task will be fired. Start a timer to run at a
+  // geometrically distributed number of seconds `delay` from now. If the timer
+  // is already running, it will be replaced to call the given `user_task`.
+  base::Time StartWithPrivacy(const base::Location& location,
+                              base::TimeDelta delay,
+                              base::OnceClosure user_task);
+
+  // Returns `true` if the timer is running (i.e., not stopped).
+  bool IsRunning() const;
+
+  // Call this method to stop the timer. It is a no-op if the timer is not
+  // running. Returns `true` if the timer was stopped, otherwise returns
+  // `false`.
+  bool Stop();
+
+  base::Time desired_run_time() const { return timer_.desired_run_time(); }
+
+ private:
+  base::WallClockTimer timer_;
+};
+
+class ScopedTimerDelaySetterForTesting final {
+ public:
+  explicit ScopedTimerDelaySetterForTesting(base::TimeDelta delay);
+
+  ~ScopedTimerDelaySetterForTesting();
+};
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_COMMON_TIMER_TIMER_H_

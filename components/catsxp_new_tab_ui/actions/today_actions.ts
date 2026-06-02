@@ -1,0 +1,60 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+import { createAction } from 'redux-act'
+import * as CatsxpNews from '../../catsxp_news/browser/resources/shared/api'
+
+export const interactionBegin = createAction('interactionStart')
+
+export const ensureSettingsData = createAction('ensureSettingsData')
+
+type DataReceivedPayload = {
+  feed?: CatsxpNews.Feed
+  publishers?: CatsxpNews.Publishers
+}
+export const dataReceived = createAction<DataReceivedPayload>('dataReceived')
+
+/**
+ * Scroll has reached a position so that another page of content is needed
+ */
+export const anotherPageNeeded = createAction('anotherPageNeeded')
+
+type BackgroundErrorPayload = {
+  error: Error
+}
+export const errorGettingDataFromBackground = createAction<BackgroundErrorPayload>('errorGettingDataFromBackground')
+
+/**
+ * User has requested to read an article
+ */
+export type ReadFeedItemPayload = {
+  item: CatsxpNews.FeedItem
+  openInNewTab?: boolean
+}
+export const readFeedItem = createAction<ReadFeedItemPayload>('readFeedItem')
+
+export const feedItemViewedCountChanged = createAction<number>('feedItemViewedCountChanged')
+
+export type SetPublisherPrefPayload = {
+  publisherId: string
+  enabled: boolean | null
+}
+export const setPublisherPref = createAction<SetPublisherPrefPayload>('setPublisherPref', (publisherId: string, enabled: boolean | null) => ({ publisherId, enabled }))
+
+export type RemoveDirectFeedPayload = {
+  directFeed: CatsxpNews.Publisher
+}
+export const removeDirectFeed = createAction<RemoveDirectFeedPayload>('removeDirectFeed')
+
+export const checkForUpdate = createAction('checkForUpdate')
+
+export type IsUpdateAvailablePayload = {
+  isUpdateAvailable: boolean
+}
+export const isUpdateAvailable = createAction<IsUpdateAvailablePayload>('isUpdateAvailable')
+
+export const resetTodayPrefsToDefault = createAction('resetTodayPrefsToDefault')
+
+export type RefreshPayload = {
+  isFirstInteraction: boolean
+} | void
+export const refresh = createAction<RefreshPayload>('refresh')

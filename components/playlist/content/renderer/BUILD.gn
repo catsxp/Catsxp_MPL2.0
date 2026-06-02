@@ -1,0 +1,27 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/playlist/core/common/buildflags/buildflags.gni")
+
+assert(enable_playlist)
+
+# TODO(sko) This should be component() target.
+# https://github.com/catsxp/catsxp-browser/issues/27764
+static_library("renderer") {
+  sources = [
+    "playlist_render_frame_observer.cc",
+    "playlist_render_frame_observer.h",
+  ]
+
+  public_deps = [ "//catsxp/components/playlist/core/common" ]
+
+  deps = [
+    "//catsxp/gin:converter_specializations",
+    "//content/public/renderer",
+    "//gin",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common",
+    "//url",
+    "//v8",
+  ]
+}

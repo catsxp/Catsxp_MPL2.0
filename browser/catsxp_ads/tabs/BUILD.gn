@@ -1,0 +1,65 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/catsxp_ads/buildflags/buildflags.gni")
+import("//catsxp/components/catsxp_rewards/core/buildflags/buildflags.gni")
+
+assert(enable_catsxp_ads)
+
+source_set("tabs") {
+  sources = [
+    "ads_tab_helper.cc",
+    "ads_tab_helper.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/sessions:session_id",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//catsxp/browser/catsxp_ads",
+    "//catsxp/components/catsxp_ads/browser",
+    "//catsxp/components/catsxp_ads/core/public:headers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/common",
+    "//components/prefs",
+    "//components/sessions",
+    "//ui/base",
+  ]
+
+  if (enable_catsxp_rewards) {
+    deps += [
+      "//catsxp/components/catsxp_rewards/core",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  if (!is_android) {
+    sources = [ "ads_tab_helper_browsertest.cc" ]
+
+    deps = [
+      ":tabs",
+      "//catsxp/browser/catsxp_ads",
+      "//catsxp/components/catsxp_ads/core/browser/service:test_support",
+      "//catsxp/components/catsxp_ads/core/public:headers",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//net:test_support",
+    ]
+
+    if (enable_catsxp_rewards) {
+      deps += [
+        "//catsxp/components/catsxp_rewards/core",
+      ]
+    }
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+}

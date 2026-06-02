@@ -1,0 +1,55 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/common/url/url_response_string_util.h"
+
+#include <string_view>
+#include <vector>
+
+#include "base/containers/flat_map.h"
+#include "base/strings/string_util.h"
+#include "catsxp/components/catsxp_ads/core/mojom/catsxp_ads.mojom.h"
+#include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
+
+namespace catsxp_ads {
+
+namespace {
+
+std::string HeadersToString(
+    const base::flat_map<std::string, std::string>& headers,
+    const size_t indent = 4) {
+  std::vector<std::string> formatted_headers;
+  formatted_headers.reserve(headers.size());
+
+  const std::string spaces(indent, ' ');
+
+  for (const auto& [header, value] : headers) {
+    formatted_headers.push_back(base::ReplaceStringPlaceholders(
+        "$1$2: $3", {spaces, header, value}, nullptr));
+  }
+
+  return base::JoinString(formatted_headers, "\n");
+}
+
+}  // namespace
+
+std::string UrlResponseToString(
+    const mojom::UrlResponseInfo& mojom_url_response) {
+  std::string_view http_reason_phrase =
+      mojom_url_response.code >= 0
+          ? net::GetHttpReasonPhrase(
+                static_cast<net::HttpStatusCode>(mojom_url_response.code))
+          : "";
+
+  return absl::StrFormat(
+      "URL Response:\n  URL: %s\n  Response Code: %d %s\n  Response: %s",
+      mojom_url_response.url.spec(), mojom_url_response.code,
+      http_reason_phrase, mojom_url_response.body);
+}
+
+std::string UrlResponseHeadersToString(
+    const mojom::UrlResponseInfo& mojom_url_response) {
+  return "  Headers:\n" + HeadersToString(mojom_url_response.headers);
+}
+
+}  // namespace catsxp_ads

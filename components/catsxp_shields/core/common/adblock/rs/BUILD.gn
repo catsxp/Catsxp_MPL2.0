@@ -1,0 +1,37 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_lib") {
+  crate_name = "adblock_cxx"
+  crate_root = "src/lib.rs"
+  allow_unsafe = true
+  edition = "2021"
+  sources = [
+    "src/convert.rs",
+    "src/engine.rs",
+    "src/filter_set.rs",
+    "src/lib.rs",
+    "src/resource_storage.rs",
+    "src/result.rs",
+  ]
+
+  visibility = [
+    "//catsxp/components/catsxp_shields/core/common/adblock:*",
+    "//catsxp/components/catsxp_shields/core/common/adblock/resolver",
+  ]
+
+  cxx_bindings = [ "src/lib.rs" ]
+
+  deps = [
+    "//catsxp/third_party/rust/adblock/v0_12:lib",
+    "//catsxp/third_party/rust/serde_json/v1:lib",
+    "//catsxp/third_party/rust/thiserror/v1:lib",
+  ]
+
+  if (is_ios) {
+    features = [ "ios" ]
+  } else {
+    features = [ "single_thread_optimizations" ]
+  }
+}

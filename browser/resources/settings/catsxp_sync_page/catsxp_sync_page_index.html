@@ -1,0 +1,21 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+  show-all$="[[shouldShowAll]]">
+  <settings-catsxp-sync-manage-devices-page
+    slot="view"
+    id="catsxpSync"
+    label="[[syncLabel_]]">
+  </settings-catsxp-sync-manage-devices-page>
+  <settings-catsxp-sync-subpage prefs="{{prefs}}"
+    sync-status="[[syncStatus_]]"
+    sync-label="[[syncLabel_]]"
+    slot="view" id="setup"
+    data-parent-view-id="catsxpSync">
+  </settings-catsxp-sync-subpage>
+</cr-view-manager>

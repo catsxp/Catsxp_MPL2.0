@@ -1,0 +1,21 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/common/typescript.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+transpile_web_ui("catsxp_shields_panel_ui") {
+  output_module = false
+  entry_points = [ [
+        "catsxp_shields_panel",
+        rebase_path("shields_panel.tsx"),
+      ] ]
+  resource_name = "catsxp_shields_panel"
+  imports_from = [ "//catsxp/components/catsxp_shields/resources/panel/" ]
+  deps = [ "//catsxp/components/catsxp_shields/core/common:mojom_js" ]
+}
+
+pack_web_resources("catsxp_shields_panel_generated") {
+  resource_name = "catsxp_shields_panel"
+  output_dir = "$root_gen_dir/catsxp/components/catsxp_shields/resources/panel"
+  deps = [ ":catsxp_shields_panel_ui" ]
+}

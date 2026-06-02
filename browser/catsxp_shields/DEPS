@@ -1,0 +1,12 @@
+include_rules = [
+  "+catsxp/components/catsxp_shields/core/browser",
+  "+catsxp/components/ephemeral_storage",
+  "+catsxp/components/catsxp_shields/content/test",
+  "+services/network/host_resolver.h",
+]
+
+specific_include_rules = {
+  "catsxp_timestamp_rounding_browsertest\.cc": [
+    "!content/public/renderer/render_frame.h",
+  ],
+}

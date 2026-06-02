@@ -1,0 +1,18 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/common/typescript.gni")
+
+transpile_web_ui("resources") {
+  entry_points = [ [
+        "catsxp_welcome_page",
+        rebase_path("catsxp_welcome_page.tsx"),
+      ] ]
+  resource_name = "catsxp_welcome_page"
+  imports_from = [ "//catsxp/browser/resources/catsxp_welcome_page/" ]
+}
+
+pack_web_resources("generated_resources") {
+  resource_name = "catsxp_welcome_page"
+  output_dir = "$root_gen_dir/catsxp/browser/resources/catsxp_welcome_page"
+  deps = [ ":resources" ]
+}

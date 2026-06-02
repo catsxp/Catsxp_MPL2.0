@@ -1,0 +1,19 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/build/ios/mojom/mojom_wrappers.gni")
+
+source_set("browser") {
+  sources = [
+    "catsxp_shields_settings_bridge.h",
+    "catsxp_shields_settings_bridge_impl.h",
+    "catsxp_shields_settings_bridge_impl.mm",
+  ]
+  deps = [
+    "//catsxp/components/catsxp_shields/core/browser",
+    "//catsxp/components/catsxp_shields/ios/common:mojom",
+    "//components/content_settings/core/browser",
+    "//components/prefs",
+    "//net",
+    "//url",
+  ]
+}

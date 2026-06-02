@@ -1,0 +1,18 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_SERVING_PREDICTION_MODEL_BASED_WEIGHT_SEGMENT_CREATIVE_AD_MODEL_BASED_PREDICTOR_SEGMENT_WEIGHT_INFO_H_
+#define CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_SERVING_PREDICTION_MODEL_BASED_WEIGHT_SEGMENT_CREATIVE_AD_MODEL_BASED_PREDICTOR_SEGMENT_WEIGHT_INFO_H_
+
+namespace catsxp_ads {
+
+struct CreativeAdModelBasedPredictorSegmentWeightInfo final {
+  bool operator==(const CreativeAdModelBasedPredictorSegmentWeightInfo&) const =
+      default;
+
+  double child = 0.0;
+  double parent = 0.0;
+};
+
+}  // namespace catsxp_ads
+
+#endif  // CATSXP_COMPONENTS_CATSXP_ADS_CORE_INTERNAL_SERVING_PREDICTION_MODEL_BASED_WEIGHT_SEGMENT_CREATIVE_AD_MODEL_BASED_PREDICTOR_SEGMENT_WEIGHT_INFO_H_

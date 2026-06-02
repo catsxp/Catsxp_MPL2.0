@@ -1,0 +1,35 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_BROWSER_PLAYLIST_TEST_MOCK_PLAYLIST_RENDER_FRAME_OBSERVER_CONFIGURATOR_H_
+#define CATSXP_BROWSER_PLAYLIST_TEST_MOCK_PLAYLIST_RENDER_FRAME_OBSERVER_CONFIGURATOR_H_
+
+#include <string>
+
+#include "catsxp/components/playlist/core/common/mojom/playlist.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace playlist {
+class MockPlaylistRenderFrameObserverConfigurator
+    : public mojom::PlaylistRenderFrameObserverConfigurator {
+ public:
+  MockPlaylistRenderFrameObserverConfigurator();
+  ~MockPlaylistRenderFrameObserverConfigurator() override;
+
+  MOCK_METHOD(void,
+              AddMediaSourceAPISuppressor,
+              (const std::string&),
+              (override));
+
+  MOCK_METHOD(void, AddMediaDetector, (const std::string&), (override));
+
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle);
+
+ private:
+  mojo::AssociatedReceiver<mojom::PlaylistRenderFrameObserverConfigurator>
+      receiver_{this};
+};
+}  // namespace playlist
+
+#endif  // CATSXP_BROWSER_PLAYLIST_TEST_MOCK_PLAYLIST_RENDER_FRAME_OBSERVER_CONFIGURATOR_H_

@@ -1,0 +1,9 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//build/buildflag_header.gni")
+import("buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_CATSXP_ADS=$enable_catsxp_ads" ]
+}

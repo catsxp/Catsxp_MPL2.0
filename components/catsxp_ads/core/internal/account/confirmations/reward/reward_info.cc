@@ -1,0 +1,25 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/account/confirmations/reward/reward_info.h"
+
+namespace catsxp_ads {
+
+RewardInfo::RewardInfo() = default;
+
+RewardInfo::RewardInfo(const RewardInfo& other) = default;
+
+RewardInfo& RewardInfo::operator=(const RewardInfo& other) = default;
+
+RewardInfo::RewardInfo(RewardInfo&& other) noexcept = default;
+
+RewardInfo& RewardInfo::operator=(RewardInfo&& other) noexcept = default;
+
+RewardInfo::~RewardInfo() = default;
+
+bool RewardInfo::IsValid() const {
+  return token.has_value() && blinded_token.has_value() &&
+         unblinded_token.has_value() && public_key.has_value() &&
+         !signature.empty() && !credential_base64url.empty();
+}
+
+}  // namespace catsxp_ads

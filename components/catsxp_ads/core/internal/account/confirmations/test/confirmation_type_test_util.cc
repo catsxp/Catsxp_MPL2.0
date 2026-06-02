@@ -1,0 +1,48 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/account/confirmations/test/confirmation_type_test_util.h"
+
+#include "base/check_op.h"
+#include "base/rand_util.h"
+#include "catsxp/components/catsxp_ads/core/mojom/catsxp_ads.mojom.h"
+
+namespace catsxp_ads::test {
+
+std::vector<mojom::ConfirmationType>
+BuildConfirmationTypeForCountAndIntersperseOtherTypes(
+    mojom::ConfirmationType mojom_confirmation_type,
+    size_t count) {
+  CHECK_GT(count, 0U);
+
+  const auto confirmation_type_max_value =
+      static_cast<size_t>(mojom::ConfirmationType::kMaxValue);
+
+  std::vector<mojom::ConfirmationType> mojom_confirmation_types;
+  mojom_confirmation_types.reserve(count + confirmation_type_max_value - 1);
+
+  for (size_t i = 0; i < count; ++i) {
+    mojom_confirmation_types.push_back(mojom_confirmation_type);
+  }
+
+  // Sprinkle in one of each confirmation type, other than
+  // `mojom_confirmation_type`.
+  for (size_t i = 0; i < confirmation_type_max_value; ++i) {
+    const auto other_mojom_confirmation_type =
+        static_cast<mojom::ConfirmationType>(i);
+    if (other_mojom_confirmation_type == mojom_confirmation_type) {
+      continue;
+    }
+
+    // Sprinkles on ice cream, sprinkles on cakes, sprinkle-covered donuts,
+    // cupcakes, or even confirmation types.
+    const int random_index = base::RandIntInclusive(
+        0, static_cast<int>(mojom_confirmation_types.size()));
+    mojom_confirmation_types.insert(
+        mojom_confirmation_types.cbegin() + random_index,
+        other_mojom_confirmation_type);
+  }
+
+  return mojom_confirmation_types;
+}
+
+}  // namespace catsxp_ads::test

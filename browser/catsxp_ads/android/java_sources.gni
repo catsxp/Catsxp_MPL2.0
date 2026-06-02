@@ -1,0 +1,9 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+catsxp_ads_java_sources = [
+  "../../catsxp/browser/catsxp_ads/android/java/org/chromium/chrome/browser/CatsxpAdsNativeHelper.java",
+  "../../catsxp/browser/catsxp_ads/android/java/org/chromium/chrome/browser/device_id/DeviceIdImplAndroid.java",
+  "../../catsxp/browser/catsxp_ads/android/java/org/chromium/chrome/browser/dialogs/CatsxpAdsSignupDialog.java",
+  "../../catsxp/browser/catsxp_ads/android/java/org/chromium/chrome/browser/notifications/CatsxpAds.java",
+  "../../catsxp/browser/catsxp_ads/android/java/org/chromium/chrome/browser/onboarding/CatsxpAdsOnboardingFragment.java",
+]

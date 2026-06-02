@@ -1,0 +1,63 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/catsxp_ads/buildflags/buildflags.gni")
+
+assert(enable_catsxp_ads)
+
+source_set("virtual_pref") {
+  sources = [
+    "virtual_pref_provider.cc",
+    "virtual_pref_provider.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//base/version_info",
+    "//catsxp/components/catsxp_ads/buildflags",
+    "//catsxp/components/catsxp_ads/core/public:headers",
+    "//catsxp/components/catsxp_rewards/core",
+    "//catsxp/components/ntp_background_images/common",
+    "//catsxp/components/skus/browser",
+    "//components/prefs",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/virtual_pref_provider_delegate_mock.cc",
+    "test/virtual_pref_provider_delegate_mock.h",
+  ]
+
+  public_deps = [ ":virtual_pref" ]
+
+  deps = [
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "virtual_pref_provider_unittest.cc" ]
+
+  deps = [
+    ":test_support",
+    ":virtual_pref",
+    "//base",
+    "//base/test:test_support",
+    "//base/version_info",
+    "//catsxp/components/catsxp_ads/core/internal",
+    "//catsxp/components/catsxp_ads/core/internal:test_support",
+    "//catsxp/components/catsxp_rewards/core",
+    "//catsxp/components/ntp_background_images/common",
+    "//catsxp/components/skus/browser",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

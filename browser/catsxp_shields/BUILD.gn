@@ -1,0 +1,143 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/containers/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+source_set("catsxp_shields") {
+  sources = [
+    "ad_block_pref_service_factory.h",
+    "ad_block_subscription_download_manager_getter.h",
+    "catsxp_farbling_service_factory.h",
+    "catsxp_shields_settings_service_factory.h",
+    "catsxp_shields_tab_helper.h",
+    "catsxp_shields_web_contents_observer.h",
+    "filter_list_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//catsxp/components/catsxp_shields/content/browser",
+    "//catsxp/components/catsxp_shields/core/common:mojom",
+    "//catsxp/components/ephemeral_storage",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/favicon/core",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+}
+
+source_set("catsxp_shields_impl") {
+  sources = [
+    "ad_block_pref_service_factory.cc",
+    "ad_block_subscription_download_manager_getter.cc",
+    "catsxp_farbling_service_factory.cc",
+    "catsxp_shields_settings_service_factory.cc",
+    "catsxp_shields_tab_helper.cc",
+    "catsxp_shields_web_contents_observer.cc",
+    "filter_list_service_factory.cc",
+  ]
+
+  public_deps = [ ":catsxp_shields" ]
+
+  deps = [
+    "//base:i18n",
+    "//catsxp/browser:browser_process",
+    "//catsxp/components/catsxp_perf_predictor/browser",
+    "//catsxp/components/catsxp_shields/core/browser",
+    "//catsxp/components/catsxp_shields/core/common",
+    "//catsxp/components/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/download",
+    "//chrome/browser/net",
+    "//chrome/browser/profiles",
+    "//chrome/common:mojo_bindings",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/favicon/content",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/user_prefs",
+    "//extensions/buildflags",
+    "//net",
+    "//net:net_features",
+  ]
+
+  deps += [ "//catsxp/components/containers/buildflags" ]
+
+  if (enable_containers) {
+    deps += [
+      "//catsxp/components/containers/content/browser",
+      "//catsxp/components/containers/core/common",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/catsxp_first_party_storage_cleaner_utils.cc",
+      "android/filter_list_service_factory_android.cc",
+      "catsxp_shields_web_contents_observer_android.cc",
+    ]
+
+    deps += [
+      "//catsxp/browser/android:android_browser_process",
+      "//catsxp/browser/catsxp_shields/android:jni_headers",
+      "//catsxp/build/android:jni_headers",
+      "//chrome/browser/android:tabs_public",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "ad_block_browser_test_helper.cc",
+    "ad_block_browser_test_helper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//catsxp/browser:browser_process",
+    "//catsxp/components/catsxp_shields/content/browser",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+  ]
+
+  public_deps = [ "//catsxp/components/catsxp_shields/content/test:test_support" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+
+  deps = [
+    ":catsxp_shields_impl",
+    "//catsxp/components/catsxp_shields/content/browser",
+    "//catsxp/components/catsxp_shields/core/browser",
+    "//catsxp/components/catsxp_shields/core/common",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "catsxp_shields_tab_helper_unittest.cc",
+      "catsxp_shields_util_profiles_unittest.cc",
+    ]
+
+    deps += [
+      "//chrome/browser",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//components/favicon/content",
+      "//components/favicon/core/test:test_support",
+    ]
+  }
+}

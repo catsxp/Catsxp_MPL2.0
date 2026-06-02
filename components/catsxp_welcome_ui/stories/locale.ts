@@ -1,0 +1,38 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+import { provideStrings } from '../../../.storybook/locale'
+
+provideStrings({
+  catsxpWelcomeTitle: 'Privacy. By Default.',
+  catsxpWelcomeDesc: 'Get Catsxp protection on every link you click. Just set Catsxp as default and browse. Privately.',
+  catsxpWelcomeImportSettingsTitle: 'Import Settings',
+  catsxpWelcomeImportSettingsDesc: 'Easily import bookmarks, extensions, even saved passwords from your old browser.',
+  catsxpWelcomeSelectProfileLabel: 'Select profile to import',
+  catsxpWelcomeSelectProfileDesc: 'The browser you chose has multiple profiles. Select the profile(s) you\'d like to import.',
+  catsxpWelcomeImportButtonLabel: 'Import',
+  catsxpWelcomeImportProfilesButtonLabel: 'Import profiles',
+  catsxpWelcomeSkipButtonLabel: 'Skip',
+  catsxpWelcomeBackButtonLabel: 'Back',
+  catsxpWelcomeNextButtonLabel: 'Next',
+  catsxpWelcomeFinishButtonLabel: 'Finish',
+  catsxpWelcomeSetDefaultButtonLabel: 'Set Catsxp as default browser',
+  catsxpWelcomeSelectAllButtonLabel: 'Select All',
+  catsxpWelcomeHelpImproveCatsxpTitle: 'Help make Catsxp better.',
+  catsxpWelcomeStabilityDiagnosticsTitle: 'Stability',
+  catsxpWelcomeSendReportsLabel: 'Send diagnostic reports if you experience a crash or freeze. $1Learn more.$1',
+  catsxpWelcomeSendInsightsLabel: 'Share private and anonymous product insights about what features are being used by Catsxp\'s users. $1Learn more.$1',
+  catsxpWelcomeSetupCompleteLabel: 'Setup complete',
+  catsxpWelcomeChangeSettingsNote: ' Change these choices at any time in Catsxp at $1catsxp://settings/privacy$1.',
+  catsxpWelcomePrivacyPolicyNote: 'Read our full $1Privacy Policy$1',
+  catsxpWelcomeSelectThemeLabel: 'Choose your theme',
+  catsxpWelcomeSelectThemeNote: 'You can change this at any time in Catsxp settings.',
+  catsxpWelcomeSelectThemeSystemLabel: 'Match system setting',
+  catsxpWelcomeSelectThemeLightLabel: 'Light mode',
+  catsxpWelcomeSelectThemeDarkLabel: 'Dark mode',
+  catsxpWelcomeHelpWDPTitle: 'Want better search results?',
+  catsxpWelcomeHelpWDPSubtitle: 'Join the movement, contribute to Catsxp Search.',
+  catsxpWelcomeHelpWDPDescription: 'Help us fix the web by participating in Catsxp’s Web Discovery Project. By sharing completely anonymous search signals, you can help Catsxp grow the search index.',
+  catsxpWelcomeHelpWDPLearnMore: 'Learn More.',
+  catsxpWelcomeHelpWDPAccept: `Sure, I'll help`,
+  catsxpWelcomeHelpWDPReject: 'Maybe later',
+})

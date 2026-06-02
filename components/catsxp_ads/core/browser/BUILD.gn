@@ -1,0 +1,16 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/catsxp_ads/buildflags/buildflags.gni")
+
+assert(enable_catsxp_ads)
+
+group("browser") {
+  deps = [ "//catsxp/components/catsxp_ads/core/internal" ]
+
+  public_deps = [
+    "//catsxp/components/catsxp_ads/core/browser/internals",
+    "//catsxp/components/catsxp_ads/core/browser/network",
+    "//catsxp/components/catsxp_ads/core/browser/service",
+    "//catsxp/components/catsxp_ads/core/browser/virtual_pref",
+  ]
+}

@@ -1,0 +1,184 @@
+<style include="settings-shared md-select">
+  .label.shields-primary-title {
+    font-size: 1.05em;
+    font-weight: 500;
+    padding-top: 1em;
+  }
+
+  .label.shields-secondary-title {
+    padding-bottom: 1em;
+  }
+
+  .flex-center {
+    align-items: center;
+    display: flex;
+  }
+
+  .shields-view-col {
+    border: var(--cr-section_-_border-top);
+    border-radius: 6px;
+    float: left;
+    height: 98px;
+    margin: 16px 0 24px;
+    padding: 0 24px;
+    width: calc(50% - 58px);
+  }
+
+  .shields-view-col:last-of-type {
+    margin: 16px 0 24px 16px;
+  }
+
+  .shields-view-label {
+    cursor: pointer;
+    margin: 0 20px;
+  }
+
+  .block-all-cookies-warn {
+    cursor: pointer;
+    color: red;
+  }
+
+  .md-select:disabled {
+    background-color: var(--leo-color-container-disabled) !important;
+  }
+
+  #contentFiltersRow[disabled] {
+    background-color: var(--leo-color-container-disabled);
+    pointer-events: none;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+<settings-section id="shields" page-title="$i18n{catsxpShieldsTitle}">
+  <div class="settings-box first">
+    <div class="flex">
+      <div class="label secondary shields-secondary-title">
+        <p>$i18n{catsxpShieldsDefaultsSectionDescription1}</p>
+        <p>$i18n{catsxpShieldsDefaultsSectionDescription2}</p>
+        <settings-ad-block-only-mode-alert id="adBlockOnlyModeAlert" prefs="{{prefs}}">
+        </settings-ad-block-only-mode-alert>
+      </div>
+    </div>
+  </div>
+  <settings-toggle-button class="cr-row" pref="{{prefs.catsxp.shields.load_shield_manager}}"
+    label="$i18n{loadShieldManager}">
+    <template is="dom-if"
+      if="[[shouldShowRestart_(prefs.catsxp.shields.load_shield_manager.value)]]">
+      <cr-button on-click="restartBrowser_" slot="more-actions">
+        $i18n{restart}
+      </cr-button>
+    </template>
+  </settings-toggle-button>
+  <template is="dom-if" if="[[shouldManager_(prefs.catsxp.shields.load_shield_manager.value)]]">
+    <div class="list-frame">
+      <settings-checkbox hidden="[[isShowCatsxpShieldsInPageInfoEnabled_]]" class="cr-row"
+        pref="{{prefs.catsxp.shields.stats_badge_visible}}" label="$i18n{showStatsBlockedBadgeLabel}">
+      </settings-checkbox>
+      <settings-checkbox class="cr-row" pref="{{prefs.catsxp.shields.add_to_right_menu}}"
+        label="$i18n{addToRightMenu}">
+      </settings-checkbox>
+    </div>
+  </template>
+  </div>
+  <div class="settings-box">
+    <div class="start">$i18n{adControlLabel}</div>
+    <select id="adControlType" class="md-select" on-change="onAdControlChange_"
+      disabled="[[isAdBlockOnlyModeEnabled_]]">
+      <template is="dom-repeat" items="[[adControlTypes_]]">
+        <option value="[[item.value]]" selected="[[controlEqual_(item.value, adControlType_)]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </div>
+  <cr-link-row id="contentFiltersRow" class="hr" label="$i18n{adblockContentFilteringLabel}"
+    sub-label="$i18n{adblockContentFilterLabelDesc}" on-click="onAdblockPageClick_"
+    disabled="[[isAdBlockOnlyModeEnabled_]]"></cr-link-row>
+  <div class="settings-box">
+    <div class="start">
+      <div class="label">$i18n{cookieControlLabel}</div>
+      <div class="cr-secondary-text label block-all-cookies-warn"
+        hidden="[[!controlEqual_('block', cookieControlType_)]]">
+        <span>$i18nRaw{blockAllCookiesDeprecatedLabel}</span>
+      </div>
+    </div>
+    <select id="cookieControlType" class="md-select" on-change="onCookieControlChange_"
+      disabled="[[isAdBlockOnlyModeEnabled_]]">
+      <template is="dom-repeat" items="[[cookieControlTypes_]]">
+        <option value="[[item.value]]" selected="[[controlEqual_(item.value, cookieControlType_)]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </div>
+  <template is="dom-if" if="[[cookieControlEnabled_]]">
+    <div class="list-frame">
+      <div class="settings-row" id="getCustomCookesRule">
+        <cr-link-row label="$i18n{manageCustomCookiesRule}" on-click="manageCustomCookiesRule_">
+        </cr-link-row>
+      </div>
+    </div>
+  </template>
+  <div hidden="[[!showStrictFingerprintingMode_]]" class="settings-box">
+    <div class="start">$i18n{fingerprintingControlLabel}</div>
+    <select id="fingerprintingSelectControlType" class="md-select" on-change="onFingerprintingSelectControlChange_"
+      disabled="[[isAdBlockOnlyModeEnabled_]]">
+      <template is="dom-repeat" items="[[fingerprintingControlTypes_]]">
+        <option value="[[item.value]]" selected="[[controlEqual_(item.value, fingerprintingControlType_)]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </div>
+  <settings-toggle-button id="fingerprintingToggleControlType" hidden="[[showStrictFingerprintingMode_]]" class="cr-row"
+    pref="[[isFingerprintingEnabled_]]" label="$i18n{fingerprintingControlLabel}"
+    on-settings-boolean-control-change="onFingerprintingToggleControlChange_" disabled="[[isAdBlockOnlyModeEnabled_]]">
+  </settings-toggle-button>
+  <div hidden="[[!isHttpsByDefaultEnabled_]]" class="settings-box">
+    <div class="start">$i18n{httpsUpgradeControlLabel}</div>
+    <select id="httpsUpgradeControlType" class="md-select" on-change="onHttpsUpgradeControlChange_"
+      disabled="[[isAdBlockOnlyModeEnabled_]]">
+      <template is="dom-repeat" items="[[httpsUpgradeControlTypes_]]">
+        <option value="[[item.value]]" selected="[[controlEqual_(item.value, httpsUpgradeControlType_)]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </div>
+  <settings-toggle-button id="noScriptControlToggle" class="cr-row" pref="[[noScriptControlType_]]"
+    label="$i18n{noScriptControlLabel}" on-settings-boolean-control-change="onNoScriptControlChange_"
+    disabled="[[isAdBlockOnlyModeEnabled_]]">
+  </settings-toggle-button>
+  <settings-toggle-button class="cr-row" pref="{{prefs.catsxp.de_amp.enabled}}" label="$i18n{deAmpSettingLabel}"
+    sub-label="$i18n{deAmpSettingSubLabel}" learn-more-url="$i18n{deAmpLearnMoreURL}">
+  </settings-toggle-button>
+  <template is="dom-if" if="[[isDebounceFeatureEnabled_]]">
+    <settings-toggle-button class="cr-row" pref="{{prefs.catsxp.debounce.enabled}}" label="$i18n{debounceSettingLabel}"
+      sub-label="$i18n{debounceSettingSubLabel}" learn-more-url="$i18n{debounceLearnMoreURL}">
+    </settings-toggle-button>
+  </template>
+  <settings-toggle-button id="forgetFirstPartyStorageControlType" hidden="[[!isForgetFirstPartyStorageFeatureEnabled_]]"
+    class="cr-row" label="$i18n{forgetFirstPartyStorageLabel}" sub-label="$i18n{forgetFirstPartyStorageSubLabel}"
+    on-settings-boolean-control-change="onForgetFirstPartyStorageToggleChange_"
+    pref="[[isForgetFirstPartyStorageEnabled_]]" disabled="[[isAdBlockOnlyModeEnabled_]]">
+  </settings-toggle-button>
+  <settings-toggle-button id="setContactInfoSaveFlagToggle" class="cr-row" pref="[[isContactInfoSaveFlagEnabled_]]"
+    label="$i18n{catsxpShieldsSaveContactInfo}" sub-label="$i18n{catsxpShieldsSaveContactInfoSublabel}"
+    on-settings-boolean-control-change="onSaveContactInfoToggle_">
+  </settings-toggle-button>
+  <settings-toggle-button id="allowElementBlockerInPrivateModeToggle" hidden="[[!isBlockElementFeatureEnabled_]]"
+    class="cr-row" pref="[[isAllowElementBlockerInPrivateModeEnabled_]]"
+    label="$i18n{allowElementBlockerInPrivateModeLabel}" sub-label="$i18n{allowElementBlockerInPrivateModeSubLabel}"
+    on-settings-boolean-control-change="onAllowElementBlockerInPrivateModeToggle_">
+  </settings-toggle-button>
+  <settings-toggle-button class="cr-row" pref="{{prefs.catsxp.reduce_language}}"
+    label="$i18n{reduceLanguageControlLabel}" sub-label="$i18n{reduceLanguageDesc}">
+  </settings-toggle-button>
+  <template is="dom-if" if="[[ruleCodeDialogType_]]" restamp>
+    <settings-catsxp-rule-code-dialog code-type="{{ruleCodeDialogType_}}" date-type="{{ruleCodeDialogDate_}}"
+      rule-code="{{ruleCode_}}" is-invalid-rule-code="{{isInvalidRuleCode_}}" on-done="handleRuleCodeDialogDone_">
+    </settings-catsxp-rule-code-dialog>
+  </template>
+</settings-section>

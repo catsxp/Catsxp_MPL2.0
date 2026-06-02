@@ -1,0 +1,66 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#ifndef CATSXP_BROWSER_PLAYLIST_PLAYLIST_SERVICE_FACTORY_H_
+#define CATSXP_BROWSER_PLAYLIST_PLAYLIST_SERVICE_FACTORY_H_
+
+#include <memory>
+
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "catsxp/components/playlist/core/common/mojom/playlist.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+class PrefRegistrySimple;
+class Profile;
+
+namespace base {
+template <typename T>
+class NoDestructor;
+}  // namespace base
+
+namespace playlist {
+class PlaylistService;
+class MediaDetectorComponentManager;
+
+class PlaylistServiceFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  static PlaylistService* GetForBrowserContext(
+      content::BrowserContext* context);
+#if BUILDFLAG(IS_ANDROID)
+  static mojo::PendingRemote<mojom::PlaylistService> GetRemoteForProfile(
+      Profile* profile);
+#endif  // BUILDFLAG(IS_ANDROID)
+  static PlaylistServiceFactory* GetInstance();
+
+  PlaylistServiceFactory(const PlaylistServiceFactory&) = delete;
+  PlaylistServiceFactory& operator=(const PlaylistServiceFactory&) = delete;
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // BrowserContextKeyedServiceFactory
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
+
+ private:
+  friend base::NoDestructor<PlaylistServiceFactory>;
+
+  PlaylistServiceFactory();
+  ~PlaylistServiceFactory() override;
+
+  // BrowserContextKeyedServiceFactory overrides:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override;
+
+  void PrepareMediaDetectorComponentManager();
+
+  // The media detector component is global extension and it's used all service
+  // instances.
+  std::unique_ptr<MediaDetectorComponentManager>
+      media_detector_component_manager_;
+};
+
+}  // namespace playlist
+
+#endif  // CATSXP_BROWSER_PLAYLIST_PLAYLIST_SERVICE_FACTORY_H_

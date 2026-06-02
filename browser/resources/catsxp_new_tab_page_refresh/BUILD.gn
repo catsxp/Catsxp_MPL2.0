@@ -1,0 +1,41 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/ai_chat/core/common/buildflags/buildflags.gni")
+import("//catsxp/components/common/typescript.gni")
+
+assert(!is_android)
+
+transpile_web_ui("resources") {
+  entry_points = [ [
+        "catsxp_new_tab_page",
+        rebase_path("catsxp_new_tab_page.tsx"),
+      ] ]
+  resource_name = "catsxp_new_tab_page_refresh"
+  imports_from = [
+    "//catsxp/browser/resources/catsxp_new_tab_page_refresh/",
+    "//catsxp/components/ai_chat/resources/",
+    "//catsxp/components/catsxp_news/browser/resources/",
+    "//catsxp/components/web-components/",
+  ]
+  deps = [
+    "//catsxp/browser/ui/webui/catsxp_new_tab_page_refresh:mojom_js",
+
+    # Unconditional for gn check as typescript cannnot yet conditionally import
+    # during typecheck.
+    # TODO(https://github.com/catsxp/catsxp-browser/issues/53190): remove when
+    # fixed.
+    "//catsxp/components/ai_chat/core/common/mojom:mojom_js",
+    "//catsxp/components/catsxp_ads/core/mojom:mojom_js",
+    "//catsxp/components/catsxp_news/common:mojom_js",
+    "//catsxp/components/ntp_background_images/browser/mojom:mojom_js",
+    "//catsxp/components/resources:strings",
+    "//components/omnibox/composebox:mojo_bindings",
+  ]
+}
+
+pack_web_resources("generated_resources") {
+  resource_name = "catsxp_new_tab_page_refresh"
+  output_dir =
+      "$root_gen_dir/catsxp/browser/resources/catsxp_new_tab_page_refresh"
+  deps = [ ":resources" ]
+}

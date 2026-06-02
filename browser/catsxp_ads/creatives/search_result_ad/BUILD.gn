@@ -1,0 +1,68 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//catsxp/components/catsxp_ads/buildflags/buildflags.gni")
+import("//catsxp/components/catsxp_rewards/core/buildflags/buildflags.gni")
+
+assert(enable_catsxp_ads)
+
+source_set("search_result_ad") {
+  sources = [
+    "creative_search_result_ad_clicked_infobar_delegate.cc",
+    "creative_search_result_ad_clicked_infobar_delegate.h",
+    "creative_search_result_ad_tab_helper.cc",
+    "creative_search_result_ad_tab_helper.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//catsxp/components/catsxp_ads/core/mojom",
+    "//catsxp/components/infobars/core",
+    "//components/infobars/core",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//catsxp/app:catsxp_generated_resources_grit_grit",
+    "//catsxp/browser/catsxp_ads",
+    "//catsxp/components/catsxp_ads/browser",
+    "//catsxp/components/catsxp_ads/content/browser",
+    "//catsxp/components/catsxp_ads/core",
+    "//catsxp/components/catsxp_search/common",
+    "//catsxp/components/vector_icons",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/infobars",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/prefs",
+    "//components/vector_icons",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "creative_search_result_ad_tab_helper_browsertest.cc" ]
+
+  deps = [
+    ":search_result_ad",
+    "//catsxp/components/catsxp_ads/browser",
+    "//catsxp/components/catsxp_ads/core/browser/service:test_support",
+    "//catsxp/components/catsxp_ads/core/mojom",
+    "//catsxp/components/catsxp_ads/core/mojom",
+    "//catsxp/components/catsxp_ads/core/public:headers",
+    "//chrome/browser/ui",
+    "//net:test_support",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    deps += [ "//chrome/test:test_support_ui" ]
+  }
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}

@@ -1,0 +1,168 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/account/statement/next_payment_date_util.h"
+
+#include <optional>
+
+#include "base/test/scoped_feature_list.h"
+#include "catsxp/components/catsxp_ads/core/internal/account/statement/statement_feature.h"
+#include "catsxp/components/catsxp_ads/core/internal/account/transactions/test/transactions_test_util.h"
+#include "catsxp/components/catsxp_ads/core/internal/account/transactions/transaction_info.h"
+#include "catsxp/components/catsxp_ads/core/internal/common/test/test_base.h"
+#include "catsxp/components/catsxp_ads/core/internal/common/test/time_test_util.h"
+#include "catsxp/components/catsxp_ads/core/mojom/catsxp_ads.mojom.h"
+
+// npm run test -- catsxp_unit_tests --filter=CatsxpAds*
+
+namespace catsxp_ads {
+
+class CatsxpAdsNextPaymentDateUtilTest : public test::TestBase {
+ protected:
+  void SetUp() override {
+    test::TestBase::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kAccountStatementFeature, {{"next_payment_day", "5"}});
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CatsxpAdsNextPaymentDateUtilTest,
+       TimeNowIsBeforeNextPaymentDayWithReconciledTransactionsPreviousMonth) {
+  // Arrange
+  AdvanceClockTo(test::TimeFromUTCString("1 January 2020"));
+
+  TransactionList transactions;
+  const TransactionInfo transaction = test::BuildTransaction(
+      /*value=*/0.01, mojom::AdType::kNotificationAd,
+      mojom::ConfirmationType::kViewedImpression, /*reconciled_at=*/test::Now(),
+      /*use_random_uuids=*/true);
+  transactions.push_back(transaction);
+
+  AdvanceClockTo(test::TimeFromUTCString("1 February 2020"));
+
+  const base::Time next_payment_token_redemption_at =
+      test::TimeFromUTCString("5 February 2020");
+
+  // Act
+  const std::optional<base::Time> next_payment_date =
+      MaybeCalculateNextPaymentDate(next_payment_token_redemption_at,
+                                    transactions);
+
+  // Assert
+  ASSERT_TRUE(next_payment_date);
+  EXPECT_EQ(test::TimeFromUTCString("5 February 2020 23:59:59.999"),
+            *next_payment_date);
+}
+
+TEST_F(CatsxpAdsNextPaymentDateUtilTest,
+       TimeNowIsBeforeNextPaymentDayWithNoReconciledTransactionsPreviousMonth) {
+  // Arrange
+  AdvanceClockTo(test::TimeFromUTCString("1 February 2020"));
+
+  const base::Time next_payment_token_redemption_at =
+      test::TimeFromUTCString("5 February 2020");
+
+  // Act
+  const std::optional<base::Time> next_payment_date =
+      MaybeCalculateNextPaymentDate(next_payment_token_redemption_at,
+                                    /*transactions=*/{});
+
+  // Assert
+  ASSERT_TRUE(next_payment_date);
+  EXPECT_EQ(test::TimeFromUTCString("5 March 2020 23:59:59.999"),
+            *next_payment_date);
+}
+
+TEST_F(CatsxpAdsNextPaymentDateUtilTest,
+       TimeNowIsAfterNextPaymentDayWithReconciledTransactionsThisMonth) {
+  // Arrange
+  AdvanceClockTo(test::TimeFromUTCString("31 January 2020"));
+
+  TransactionList transactions;
+  const TransactionInfo transaction = test::BuildTransaction(
+      /*value=*/0.01, mojom::AdType::kNotificationAd,
+      mojom::ConfirmationType::kViewedImpression, /*reconciled_at=*/test::Now(),
+      /*use_random_uuids=*/true);
+  transactions.push_back(transaction);
+
+  const base::Time next_payment_token_redemption_at =
+      test::TimeFromUTCString("5 February 2020");
+
+  // Act
+  const std::optional<base::Time> next_payment_date =
+      MaybeCalculateNextPaymentDate(next_payment_token_redemption_at,
+                                    transactions);
+
+  // Act & Assert
+  ASSERT_TRUE(next_payment_date);
+  EXPECT_EQ(test::TimeFromUTCString("5 February 2020 23:59:59.999"),
+            *next_payment_date);
+}
+
+TEST_F(
+    CatsxpAdsNextPaymentDateUtilTest,
+    TimeNowIsAfterNextPaymentDayWhenNextTokenRedemptionDateIsThisMonthAndNoReconciledTransactionsThisMonth) {
+  // Arrange
+  AdvanceClockTo(test::TimeFromUTCString("11 January 2020"));
+
+  const base::Time next_payment_token_redemption_at =
+      test::TimeFromUTCString("31 January 2020");
+
+  // Act
+  const std::optional<base::Time> next_payment_date =
+      MaybeCalculateNextPaymentDate(next_payment_token_redemption_at,
+                                    /*transactions=*/{});
+
+  // Assert
+  ASSERT_TRUE(next_payment_date);
+  EXPECT_EQ(test::TimeFromUTCString("5 February 2020 23:59:59.999"),
+            *next_payment_date);
+}
+
+TEST_F(
+    CatsxpAdsNextPaymentDateUtilTest,
+    TimeNowIsAfterNextPaymentDayWhenNextTokenRedemptionDateIsNextMonthAndNoReconciledTransactionsThisMonth) {
+  // Arrange
+  AdvanceClockTo(test::TimeFromUTCString("31 January 2020"));
+
+  const base::Time next_payment_token_redemption_at =
+      test::TimeFromUTCString("5 February 2020");
+
+  // Act
+  const std::optional<base::Time> next_payment_date =
+      MaybeCalculateNextPaymentDate(next_payment_token_redemption_at,
+                                    /*transactions=*/{});
+
+  // Assert
+  ASSERT_TRUE(next_payment_date);
+  EXPECT_EQ(test::TimeFromUTCString("5 March 2020 23:59:59.999"),
+            *next_payment_date);
+}
+
+TEST_F(CatsxpAdsNextPaymentDateUtilTest,
+       DoesNotCalculateNextPaymentDateWhenPaymentDayIsInvalidForMonth) {
+  // Arrange
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAccountStatementFeature, {{"next_payment_day", "31"}});
+
+  // Today (March 1) is on or before payment day 31, and there are no
+  // reconciled transactions from last month, so the next payment is scheduled
+  // for April. April has no 31st day, so the date is uncalculable.
+  AdvanceClockTo(test::TimeFromUTCString("1 March 2020"));
+
+  const base::Time next_payment_token_redemption_at =
+      test::TimeFromUTCString("5 March 2020");
+
+  // Act
+  const std::optional<base::Time> next_payment_date =
+      MaybeCalculateNextPaymentDate(next_payment_token_redemption_at,
+                                    /*transactions=*/{});
+
+  // Assert
+  EXPECT_FALSE(next_payment_date);
+}
+
+}  // namespace catsxp_ads

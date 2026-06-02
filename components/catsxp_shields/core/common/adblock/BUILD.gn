@@ -1,0 +1,19 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+group("adblock") {
+  visibility = [
+    "//catsxp/components/catsxp_shields/content/browser:*",
+    "//catsxp/components/catsxp_shields/content/test:test_support",
+    "//catsxp/components/catsxp_shields/content/test:unit_tests",
+    "//catsxp/components/catsxp_shields/core/browser:*",
+    "//catsxp/components/catsxp_shields/core/common:*",
+    "//catsxp/fuzzers:*",
+    "//catsxp/ios/browser/api/catsxp_shields:*",
+  ]
+  deps = [
+    "resolver",
+    "rs:rust_lib",
+  ]
+
+  public_deps = [ "rs:rust_lib_cxx_generated_gen" ]
+}

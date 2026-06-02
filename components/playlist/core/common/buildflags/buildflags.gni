@@ -1,0 +1,17 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/catsxp_origin/buildflags/buildflags.gni")
+import("//build/config/ui.gni")
+
+declare_args() {
+  enable_playlist = !is_catsxp_origin_branded
+}
+
+declare_args() {
+  enable_playlist_webui = enable_playlist && toolkit_views
+}
+
+assert(enable_playlist || !is_android,
+       "enable_playlist=false is not supported on Android")
+assert(enable_playlist || !is_ios,
+       "enable_playlist=false is not supported on iOS")

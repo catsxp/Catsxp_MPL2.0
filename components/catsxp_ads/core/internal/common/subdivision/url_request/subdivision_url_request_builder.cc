@@ -1,0 +1,33 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/catsxp_ads/core/internal/common/subdivision/url_request/subdivision_url_request_builder.h"
+
+#include <string>
+
+#include "catsxp/components/catsxp_ads/core/internal/common/subdivision/url_request/subdivision_url_request_builder_util.h"
+#include "catsxp/components/catsxp_ads/core/internal/common/url/request_builder/host/url_host_types.h"
+#include "catsxp/components/catsxp_ads/core/internal/common/url/request_builder/host/url_host_util.h"
+#include "catsxp/components/catsxp_ads/core/mojom/catsxp_ads.mojom.h"
+#include "url/gurl.h"
+
+namespace catsxp_ads {
+
+namespace {
+
+GURL BuildUrl() {
+  const std::string spec =
+      GetUrlHost(UrlHostType::kGeo) + BuildSubdivisionUrlPath();
+  return GURL(spec);
+}
+
+}  // namespace
+
+mojom::UrlRequestInfoPtr GetSubdivisionUrlRequestBuilder::Build() {
+  mojom::UrlRequestInfoPtr mojom_url_request = mojom::UrlRequestInfo::New();
+  mojom_url_request->url = BuildUrl();
+  mojom_url_request->method = mojom::UrlRequestMethodType::kGet;
+
+  return mojom_url_request;
+}
+
+}  // namespace catsxp_ads

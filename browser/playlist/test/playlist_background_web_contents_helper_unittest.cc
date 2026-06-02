@@ -1,0 +1,48 @@
+/* Copyright (c) 2023 The Catsxp Authors. All rights reserved. */
+
+#include "catsxp/components/playlist/content/browser/playlist_background_web_contents_helper.h"
+
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/test/task_environment.h"
+#include "catsxp/browser/playlist/playlist_service_factory.h"
+#include "catsxp/browser/playlist/test/mock_playlist_render_frame_observer_configurator.h"
+#include "catsxp/browser/playlist/test/playlist_unittest_base.h"
+#include "catsxp/components/playlist/core/common/mojom/playlist.mojom.h"
+#include "content/public/browser/render_frame_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "url/gurl.h"
+
+namespace playlist {
+class PlaylistBackgroundWebContentsHelperTest : public PlaylistUnitTestBase {
+ protected:
+  MockPlaylistRenderFrameObserverConfigurator configurator_;
+};
+
+TEST_F(PlaylistBackgroundWebContentsHelperTest,
+       EnsureFrameObserverIsInitialized) {
+  main_rfh()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::PlaylistRenderFrameObserverConfigurator::Name_,
+      base::BindRepeating(
+          &MockPlaylistRenderFrameObserverConfigurator::BindReceiver,
+          base::Unretained(&configurator_)));
+
+  PlaylistBackgroundWebContentsHelper::CreateForWebContents(
+      web_contents(),
+      PlaylistServiceFactory::GetForBrowserContext(browser_context()),
+      base::BindOnce([](GURL, std::vector<mojom::PlaylistItemPtr>) {}));
+
+  EXPECT_CALL(configurator_,
+              AddMediaSourceAPISuppressor(testing::Not(testing::IsEmpty())))
+      .Times(1);
+  EXPECT_CALL(configurator_, AddMediaDetector(testing::Not(testing::IsEmpty())))
+      .Times(1);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  task_environment()->RunUntilIdle();
+}
+
+}  // namespace playlist

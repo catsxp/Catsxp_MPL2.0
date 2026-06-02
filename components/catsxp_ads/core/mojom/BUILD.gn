@@ -1,0 +1,13 @@
+# Copyright (c) 2023 The Catsxp Authors. All rights reserved. 
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  generate_java = true
+  sources = [ "catsxp_ads.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}

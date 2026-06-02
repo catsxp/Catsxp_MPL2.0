@@ -1,0 +1,28 @@
+# Copyright (c) 2020 The Catsxp Authors. All rights reserved.
+
+import("//catsxp/components/common/typescript.gni")
+
+assert(!is_android)
+
+transpile_web_ui("resources") {
+  entry_points = [ [
+        "catsxp_shields_panel_new",
+        rebase_path("shields_panel.tsx"),
+      ] ]
+  resource_name = "catsxp_shields_panel_new"
+  imports_from = [
+    "//catsxp/components/catsxp_shields/resources/panel_new/",
+    "//catsxp/components/web-components/",
+  ]
+  deps = [
+    "//catsxp/components/catsxp_shields/core/common:mojom_js",
+    "//catsxp/components/resources:strings",
+  ]
+}
+
+pack_web_resources("generated_resources") {
+  resource_name = "catsxp_shields_panel_new"
+  output_dir =
+      "$root_gen_dir/catsxp/components/catsxp_shields/resources/panel_new"
+  deps = [ ":resources" ]
+}

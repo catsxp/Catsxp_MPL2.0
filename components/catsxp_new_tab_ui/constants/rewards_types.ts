@@ -1,0 +1,12 @@
+/* Copyright (c) 2020 The Catsxp Authors. All rights reserved. */
+
+export const enum types {
+  DISMISS_NOTIFICATION = '@@rewards/DISMISS_NOTIFICATION',
+  ON_ADS_ENABLED = '@@rewards/ON_ADS_ENABLED',
+  ON_ADS_ACCOUNT_STATEMENT = '@@rewards/ON_ADS_ACCOUNT_STATEMENT',
+  ON_WALLET_INITIALIZED = '@@rewards/ON_WALLET_INITIALIZED',
+  ON_BALANCE_REPORT = '@@rewards/ON_BALANCE_REPORT',
+  ON_BALANCE = '@@rewards/ON_BALANCE',
+  ON_WIDGET_POSITION_CHANGED = '@@rewards/ON_WIDGET_POSITION_CHANGED',
+  ON_COMPLETE_RESET = '@@rewards/ON_COMPLETE_RESET'
+}
